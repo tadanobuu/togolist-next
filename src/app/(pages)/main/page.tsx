@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,11 +12,26 @@ import { CalendarIcon, MapPin, Clock, User, PlusCircle, LogOut } from "lucide-re
 import Image from "next/image";
 import Link from "next/link";
 import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
+import { Database } from "@/types/supabase";
 
+type Togo = Database['public']['Tables']['togo']['Row'];
 
 export default function TOGOListMain() {
 
-  const [ lists, setLists ] = useState(getAllTogos());
+  const [togos , setTogos] = useState<Togo[]>([]);
+
+  useEffect(() => {
+    const fetchTogos = async() => {
+      try{
+          const data = await getAllTogos();
+          setTogos(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchTogos();
+  },[])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -102,42 +117,45 @@ export default function TOGOListMain() {
           </TabsList>
           <TabsContent value="list">
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
-              {lists.map((item) => (
-                <Card key={item.id} className="overflow-hidden">
-                  <div className="relative h-64">
-                    <Image
-                      src={item.image}
-                      alt=""
-                      fill={true}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      aria-hidden="true"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-                    <div className="relative h-full p-6 flex flex-col justify-between text-white">
-                      <div>
-                        <CardTitle className="text-2xl mb-2">{item.name}</CardTitle>
-                        <CardContent className="p-0">
-                          <p className="flex items-center text-sm mb-1">
-                            <MapPin className="mr-2 h-4 w-4" /> 東京都〇〇区××町1-2-3
-                          </p>
-                          <p className="flex items-center text-sm mb-1">
-                            <CalendarIcon className="mr-2 h-4 w-4" /> 2023年7月1日 - 2023年7月31日
-                          </p>
-                          <p className="flex items-center text-sm mb-1">
-                            <User className="mr-2 h-4 w-4" /> ユーザー{item.id}
-                          </p>
-                          <p className="flex items-center text-sm">
-                            <Clock className="mr-2 h-4 w-4" /> 2023年6月15日 12:00
-                          </p>
-                        </CardContent>
+              { togos.map((item: Togo) => (
+                  <Card key={item.id} className="overflow-hidden">
+                    <div className="relative h-64">
+                      {item.imageUrl ? 
+                      <Image
+                        src={item.imageUrl}
+                        alt=""
+                        fill={true}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        aria-hidden="true"
+                      /> :
+                      <></>}
+                      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+                      <div className="relative h-full p-6 flex flex-col justify-between text-white">
+                        <div>
+                          <CardTitle className="text-2xl mb-2">{item.palceName}</CardTitle>
+                          <CardContent className="p-0">
+                            <p className="flex items-center text-sm mb-1">
+                              <MapPin className="mr-2 h-4 w-4" /> {item.address}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                              <CalendarIcon className="mr-2 h-4 w-4" /> {item.startDate} - {item.endDate}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                              <User className="mr-2 h-4 w-4" /> ユーザー{item.postUserId}
+                            </p>
+                            <p className="flex items-center text-sm">
+                              <Clock className="mr-2 h-4 w-4" /> {item.postDatetime}
+                            </p>
+                          </CardContent>
+                        </div>
+                        <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
+                          <Button variant="destructive">訪問済み</Button>
+                        </CardFooter>
                       </div>
-                      <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
-                        <Button variant="destructive">訪問済み</Button>
-                      </CardFooter>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              }
             </div>
           </TabsContent>
           <TabsContent value="map">
