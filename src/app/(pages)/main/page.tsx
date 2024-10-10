@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -10,8 +11,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, MapPin, Clock, User, PlusCircle, LogOut } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
+import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
+
 
 export default function TOGOListMain() {
+
+  const [ lists, setLists ] = useState(getAllTogos());
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-primary text-primary-foreground p-4">
@@ -96,11 +102,7 @@ export default function TOGOListMain() {
           </TabsList>
           <TabsContent value="list">
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
-              {[
-                { id: 1, name: "東京タワー", image: "/placeholder.svg?height=300&width=400" },
-                { id: 2, name: "スカイツリー", image: "/placeholder.svg?height=300&width=400" },
-                { id: 3, name: "渋谷スクランブル交差点", image: "/placeholder.svg?height=300&width=400" }
-              ].map((item) => (
+              {lists.map((item) => (
                 <Card key={item.id} className="overflow-hidden">
                   <div className="relative h-64">
                     <Image
