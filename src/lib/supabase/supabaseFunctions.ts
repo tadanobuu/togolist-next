@@ -1,23 +1,13 @@
-import { supabase } from './supabase'
+import { supabase } from './supabaseClient'
+import { Database } from '@/types/supabase';
 
-type newTogoType = {
-    palceName: string,
-    address: string,
-    prefecture: string,
-    lat: number,
-    lng: number,
-    startDate: Date,
-    endDate: Date,
-    imageUrl: string,
-    postDatetime: Date,
-    postUserId: string
-}
+type Togo = Database['public']['Tables']['togo']['Row'];
 
 export const getAllTogos = async () => {
     const togos = await supabase.from("togo").select("");
     return togos;
 };
 
-export const addTogo = async (newTogo: newTogoType) => {
+export const addTogo = async (newTogo: Togo) => {
     await supabase.from("togo").insert(newTogo)
 }
