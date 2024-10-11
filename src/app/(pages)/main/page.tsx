@@ -21,6 +21,12 @@ export default function TOGOListMain() {
 
   const [ togos , setTogos ] = useState<Togo[]>([]);
   const [ isLoading , setIsLoading ] = useState<boolean>(false);
+  const [ inputText , setInputText ] = useState<string>("");
+  const [ searchText , setSearchText ] = useState<string>("");
+  const [ searchUser , setSearchUser ] = useState<string | null>(null);
+  const [ searchPregecture , setSearchPregecture ] = useState<string | null>(null);
+  const [ searchStartDate , setSearchStartDate ] = useState<Date | undefined>(undefined);
+  const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     const fetchTogos = async() => {
@@ -36,6 +42,24 @@ export default function TOGOListMain() {
 
     fetchTogos();
   },[])
+
+    // 検索条件に対してフィルター
+    let displayList = togos;
+    if(searchText){
+        displayList = displayList.filter(item => item.palceName.indexOf(searchText) !== -1)
+    };
+    if(searchUser){
+        displayList = displayList.filter(item => item.postUserId === searchUser)
+    };
+    if(searchPregecture){
+        displayList = displayList.filter(item => item.prefecture === searchPregecture )
+    };
+    if(searchStartDate){
+        displayList = displayList.filter(item => !item.startDate || new Date(item.startDate) >= searchStartDate)
+    };
+    if(searchEndDate){
+        displayList = displayList.filter(item => !item.endDate || new Date(item.endDate) <= searchEndDate)
+    };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -56,26 +80,35 @@ export default function TOGOListMain() {
 
         <div className="mb-4 space-y-2">
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <Input type="text" placeholder="地名で検索" className="flex-grow" />
-            <Button className="bg-black text-white rounded-xl">検索</Button>
+            <Input 
+              type="text"
+              placeholder="地名で検索"
+              className="flex-grow"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+            />
+            <Button 
+              className="bg-black text-white rounded-xl"
+              onClick={() => setSearchText(inputText)}
+            >検索</Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-            <Select>
+            <Select onValueChange={(value: string) => setSearchUser(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="投稿者" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">全ての投稿者</SelectItem>
+                <SelectItem value="">全ての投稿者</SelectItem>
                 <SelectItem value="user1">ユーザー1</SelectItem>
                 <SelectItem value="user2">ユーザー2</SelectItem>
               </SelectContent>
             </Select>
-            <Select>
+            <Select onValueChange={(value: string) => setSearchPregecture(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="都道府県" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">全ての都道府県</SelectItem>
+                <SelectItem value="">全ての都道府県</SelectItem>
                 <SelectItem value="tokyo">東京都</SelectItem>
                 <SelectItem value="osaka">大阪府</SelectItem>
               </SelectContent>
@@ -88,7 +121,7 @@ export default function TOGOListMain() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" initialFocus />
+                <Calendar mode="single" initialFocus onSelect={(value) => setSearchStartDate(value)}/>
               </PopoverContent>
             </Popover>
             <Popover>
@@ -99,7 +132,7 @@ export default function TOGOListMain() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" initialFocus />
+                <Calendar mode="single" initialFocus onSelect={(value) => setSearchEndDate(value)} />
               </PopoverContent>
             </Popover>
           </div>
@@ -113,7 +146,7 @@ export default function TOGOListMain() {
           <TabsContent value="list">
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
               { isLoading ? <h3 className="font-bold">loading...</h3> :
-                togos.map((item: Togo) => (
+                displayList.map((item: Togo) => (
                   <Card key={item.id} className="overflow-hidden">
                     <div className="relative h-64">
                       {item.imageUrl ? 
