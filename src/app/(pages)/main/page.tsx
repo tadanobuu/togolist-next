@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
-import Header from "@/app/features/components/header";
+import Header from "@/app/features/components/Header";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 
