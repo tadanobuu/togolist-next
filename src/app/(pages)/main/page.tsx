@@ -43,23 +43,40 @@ export default function TOGOListMain() {
     fetchTogos();
   },[])
 
-    // 検索条件に対してフィルター
-    let displayList = togos;
-    if(searchText){
-        displayList = displayList.filter(item => item.palceName.indexOf(searchText) !== -1)
-    };
-    if(searchUser){
-        displayList = displayList.filter(item => item.postUserId === searchUser)
-    };
-    if(searchPregecture){
-        displayList = displayList.filter(item => item.prefecture === searchPregecture )
-    };
-    if(searchStartDate){
-        displayList = displayList.filter(item => !item.startDate || new Date(item.startDate) >= searchStartDate)
-    };
-    if(searchEndDate){
-        displayList = displayList.filter(item => !item.endDate || new Date(item.endDate) <= searchEndDate)
-    };
+  const startDateChange = (value: Date | undefined) => {
+    setSearchStartDate(value)
+
+    if(!searchEndDate || !value || searchEndDate < value){
+      setSearchEndDate(value)
+    }
+  }
+
+  const endDateChange = (value: Date | undefined) => {
+    setSearchEndDate(value)
+
+    if(!searchStartDate || !value || searchStartDate > value){
+      setSearchStartDate(value)
+    }
+  }
+
+  // 検索条件に対してフィルター
+  let displayList = togos;
+  if(searchText){
+    displayList = displayList.filter(item => item.palceName.indexOf(searchText) !== -1)
+  };
+  if(searchUser && searchUser !== "ALL"){
+    displayList = displayList.filter(item => item.postUserId === searchUser)
+  };
+  if(searchPregecture && searchPregecture !== "ALL"){
+    displayList = displayList.filter(item => item.prefecture === searchPregecture )
+  };
+  if(searchStartDate && searchEndDate){
+    displayList = displayList.filter(item => {
+      return(
+        (!item.startDate || new Date(item.startDate + "T00:00:00") <= searchEndDate) &&
+        (!item.endDate || new Date(item.endDate + "T00:00:00") >= searchStartDate)
+    )})
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -98,7 +115,7 @@ export default function TOGOListMain() {
                 <SelectValue placeholder="投稿者" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">全ての投稿者</SelectItem>
+                <SelectItem value="ALL">全ての投稿者</SelectItem>
                 <SelectItem value="user1">ユーザー1</SelectItem>
                 <SelectItem value="user2">ユーザー2</SelectItem>
               </SelectContent>
@@ -108,7 +125,7 @@ export default function TOGOListMain() {
                 <SelectValue placeholder="都道府県" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">全ての都道府県</SelectItem>
+                <SelectItem value="ALL">全ての都道府県</SelectItem>
                 <SelectItem value="tokyo">東京都</SelectItem>
                 <SelectItem value="osaka">大阪府</SelectItem>
               </SelectContent>
@@ -117,22 +134,30 @@ export default function TOGOListMain() {
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  <span>開始日</span>
+                  {searchStartDate ? <span>{searchStartDate.toLocaleDateString('sv-SE')}</span> : <span>開始日</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" initialFocus onSelect={(value) => setSearchStartDate(value)}/>
+                <Calendar
+                  mode="single"
+                  initialFocus
+                  onSelect={(value) => startDateChange(value)}
+                />
               </PopoverContent>
             </Popover>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  <span>終了日</span>
+                  {searchEndDate ? <span>{searchEndDate.toLocaleDateString('sv-SE')}</span> : <span>終了日</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar mode="single" initialFocus onSelect={(value) => setSearchEndDate(value)} />
+                <Calendar 
+                  mode="single"
+                  initialFocus
+                  onSelect={(value) => endDateChange(value)}
+                />
               </PopoverContent>
             </Popover>
           </div>
