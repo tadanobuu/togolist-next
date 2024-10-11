@@ -18,13 +18,16 @@ type Togo = Database['public']['Tables']['togo']['Row'];
 
 export default function TOGOListMain() {
 
-  const [togos , setTogos] = useState<Togo[]>([]);
+  const [ togos , setTogos ] = useState<Togo[]>([]);
+  const [ isLoading , setIsLoading ] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchTogos = async() => {
       try{
-          const data = await getAllTogos();
-          setTogos(data)
+        setIsLoading(true)
+        const data = await getAllTogos();
+        setTogos(data)
+        setIsLoading(false)
       } catch (error) {
         console.log(error)
       }
@@ -117,7 +120,8 @@ export default function TOGOListMain() {
           </TabsList>
           <TabsContent value="list">
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
-              { togos.map((item: Togo) => (
+              { isLoading ? <h3 className="font-bold">loading...</h3> :
+                togos.map((item: Togo) => (
                   <Card key={item.id} className="overflow-hidden">
                     <div className="relative h-64">
                       {item.imageUrl ? 
@@ -144,7 +148,8 @@ export default function TOGOListMain() {
                               <User className="mr-2 h-4 w-4" /> ユーザー{item.postUserId}
                             </p>
                             <p className="flex items-center text-sm">
-                              <Clock className="mr-2 h-4 w-4" /> {item.postDatetime}
+                              <Clock className="mr-2 h-4 w-4" /> 
+                              {item.postDatetime ? item.postDatetime.toLocaleString().replace("T"," ") : ""}
                             </p>
                           </CardContent>
                         </div>

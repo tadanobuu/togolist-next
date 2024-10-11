@@ -5,7 +5,7 @@ import { Database } from '@/types/supabase';
 type Togo = Database['public']['Tables']['togo']['Row'];
 
 export const getAllTogos = async (): Promise<Togo[]> => {
-    const { data , error }: PostgrestResponse<Togo> = await supabase.from("togo").select("");
+    const { data , error }: PostgrestResponse<Togo> = await supabase.from("togo").select("*");
 
     if(error){
         console.log("Error fetch")
