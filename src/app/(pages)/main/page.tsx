@@ -114,7 +114,7 @@ export default function TOGOListMain() {
               <SelectTrigger>
                 <SelectValue placeholder="投稿者" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての投稿者</SelectItem>
                 <SelectItem value="user1">ユーザー1</SelectItem>
                 <SelectItem value="user2">ユーザー2</SelectItem>
@@ -124,7 +124,7 @@ export default function TOGOListMain() {
               <SelectTrigger>
                 <SelectValue placeholder="都道府県" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての都道府県</SelectItem>
                 <SelectItem value="tokyo">東京都</SelectItem>
                 <SelectItem value="osaka">大阪府</SelectItem>
@@ -140,6 +140,7 @@ export default function TOGOListMain() {
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
+                  className="bg-neutral-50"
                   initialFocus
                   onSelect={(value) => startDateChange(value)}
                 />
@@ -155,6 +156,7 @@ export default function TOGOListMain() {
               <PopoverContent className="w-auto p-0">
                 <Calendar 
                   mode="single"
+                  className="bg-neutral-50"
                   initialFocus
                   onSelect={(value) => endDateChange(value)}
                 />
