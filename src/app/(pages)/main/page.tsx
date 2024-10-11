@@ -8,11 +8,12 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, MapPin, Clock, User, PlusCircle, LogOut } from "lucide-react"
+import { CalendarIcon, MapPin, Clock, User, PlusCircle } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
 import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
+import Header from "@/app/features/components/header";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 
@@ -39,16 +40,7 @@ export default function TOGOListMain() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-primary text-primary-foreground p-4">
-        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center bg-black text-white p-5">
-          <h1 className="text-2xl font-bold mb-2 sm:mb-0">TOGOリスト</h1>
-          <div className="flex items-center space-x-4">
-            <span>ユーザー名</span>
-            <Button variant="secondary" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              ログアウト
-            </Button>
-          </div>
-        </div>
+        <Header />
       </header>
 
       <main className="flex-grow container mx-auto p-4">
