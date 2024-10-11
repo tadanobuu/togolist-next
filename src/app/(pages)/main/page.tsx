@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -8,29 +8,39 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, MapPin, Clock, User, PlusCircle, LogOut } from "lucide-react"
+import { CalendarIcon, MapPin, Clock, User, PlusCircle } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
 import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
+import { Database } from "@/types/supabase";
+import Header from "@/app/features/components/Header";
 
+type Togo = Database['public']['Tables']['togo']['Row'];
 
 export default function TOGOListMain() {
 
-  const [ lists, setLists ] = useState(getAllTogos());
+  const [ togos , setTogos ] = useState<Togo[]>([]);
+  const [ isLoading , setIsLoading ] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchTogos = async() => {
+      try{
+        setIsLoading(true)
+        const data = await getAllTogos();
+        setTogos(data)
+        setIsLoading(false)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchTogos();
+  },[])
 
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-primary text-primary-foreground p-4">
-        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center bg-black text-white p-5">
-          <h1 className="text-2xl font-bold mb-2 sm:mb-0">TOGOリスト</h1>
-          <div className="flex items-center space-x-4">
-            <span>ユーザー名</span>
-            <Button variant="secondary" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              ログアウト
-            </Button>
-          </div>
-        </div>
+        <Header />
       </header>
 
       <main className="flex-grow container mx-auto p-4">
@@ -102,42 +112,47 @@ export default function TOGOListMain() {
           </TabsList>
           <TabsContent value="list">
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
-              {lists.map((item) => (
-                <Card key={item.id} className="overflow-hidden">
-                  <div className="relative h-64">
-                    <Image
-                      src={item.image}
-                      alt=""
-                      fill={true}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      aria-hidden="true"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-                    <div className="relative h-full p-6 flex flex-col justify-between text-white">
-                      <div>
-                        <CardTitle className="text-2xl mb-2">{item.name}</CardTitle>
-                        <CardContent className="p-0">
-                          <p className="flex items-center text-sm mb-1">
-                            <MapPin className="mr-2 h-4 w-4" /> 東京都〇〇区××町1-2-3
-                          </p>
-                          <p className="flex items-center text-sm mb-1">
-                            <CalendarIcon className="mr-2 h-4 w-4" /> 2023年7月1日 - 2023年7月31日
-                          </p>
-                          <p className="flex items-center text-sm mb-1">
-                            <User className="mr-2 h-4 w-4" /> ユーザー{item.id}
-                          </p>
-                          <p className="flex items-center text-sm">
-                            <Clock className="mr-2 h-4 w-4" /> 2023年6月15日 12:00
-                          </p>
-                        </CardContent>
+              { isLoading ? <h3 className="font-bold">loading...</h3> :
+                togos.map((item: Togo) => (
+                  <Card key={item.id} className="overflow-hidden">
+                    <div className="relative h-64">
+                      {item.imageUrl ? 
+                      <Image
+                        src={item.imageUrl}
+                        alt=""
+                        fill={true}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        aria-hidden="true"
+                      /> :
+                      <></>}
+                      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+                      <div className="relative h-full p-6 flex flex-col justify-between text-white">
+                        <div>
+                          <CardTitle className="text-2xl mb-2">{item.palceName}</CardTitle>
+                          <CardContent className="p-0">
+                            <p className="flex items-center text-sm mb-1">
+                              <MapPin className="mr-2 h-4 w-4" /> {item.address}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                              <CalendarIcon className="mr-2 h-4 w-4" /> {item.startDate} - {item.endDate}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                              <User className="mr-2 h-4 w-4" /> ユーザー{item.postUserId}
+                            </p>
+                            <p className="flex items-center text-sm">
+                              <Clock className="mr-2 h-4 w-4" /> 
+                              {item.postDatetime ? item.postDatetime.toLocaleString().replace("T"," ") : ""}
+                            </p>
+                          </CardContent>
+                        </div>
+                        <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
+                          <Button variant="destructive">訪問済み</Button>
+                        </CardFooter>
                       </div>
-                      <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
-                        <Button variant="destructive">訪問済み</Button>
-                      </CardFooter>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              }
             </div>
           </TabsContent>
           <TabsContent value="map">
