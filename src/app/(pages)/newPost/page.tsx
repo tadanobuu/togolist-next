@@ -13,13 +13,17 @@ import { CalendarIcon, Upload, MapPin, User, Clock } from "lucide-react"
 import Image from 'next/image'
 import Header from '@/app/features/components/Header'
 import { supabase } from '@/lib/supabase/supabaseClient'
+import { Database } from "@/types/supabase";
+import { normalize } from '@geolonia/normalize-japanese-addresses'
+
+type Togo = Database['public']['Tables']['togo']["Insert"];
 
 export default function NewPostForm() {
     const [formData, setFormData] = useState({
         placeName: '',
         address: '',
-        startDate: undefined as Date | undefined,
-        endDate: undefined as Date | undefined,
+        startDate: null as Date | null | undefined,
+        endDate: null as Date | null | undefined,
         imagePreview: null as string | null,
         file: null as File | null,
     })
@@ -57,6 +61,24 @@ export default function NewPostForm() {
                 imageUrl = data.publicUrl
             }
         }
+
+        const result = await normalize(formData.address).then(result => result);
+        console.log(result);
+
+        const newTogo: Togo = {
+            palceName: formData.placeName,
+            address: formData.address,
+            prefecture: result.pref,
+            lat: result.level ? result.point.lat : null,
+            lng: result.level ? result.point.lng : null,
+            startDate: formData.startDate ? null : formData.startDate,
+            endDate: formData.endDate ? null : formData.endDate,
+            imageUrl: imageUrl,
+            postDatetime: new Date().toString(),
+            postUserId: "1",
+        }
+
+        console.log(newTogo);
         // ここでフォームデータを処理します（APIへの送信など）
         console.log('フォームが送信されました', formData)
     }
@@ -95,7 +117,6 @@ export default function NewPostForm() {
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                             mode="single"
-                            selected={formData.startDate}
                             className='bg-neutral-50'
                             onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
                             initialFocus
@@ -119,7 +140,6 @@ export default function NewPostForm() {
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                             mode="single"
-                            selected={formData.endDate}
                             className='bg-neutral-50'
                             onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
                             initialFocus
