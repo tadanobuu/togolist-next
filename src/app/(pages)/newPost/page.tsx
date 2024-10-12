@@ -12,6 +12,7 @@ import { format } from "date-fns"
 import { CalendarIcon, Upload, MapPin, User, Clock } from "lucide-react"
 import Image from 'next/image'
 import Header from '@/app/features/components/Header'
+import { supabase } from '@/lib/supabase/supabaseClient'
 
 export default function NewPostForm() {
     const [formData, setFormData] = useState({
@@ -20,7 +21,9 @@ export default function NewPostForm() {
         startDate: undefined as Date | undefined,
         endDate: undefined as Date | undefined,
         imagePreview: null as string | null,
+        file: null as File | null,
     })
+    const [isSending, setIsSending] = useState<boolean>(false)
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target
@@ -32,14 +35,28 @@ export default function NewPostForm() {
         if (file) {
         const reader = new FileReader()
         reader.onloadend = () => {
-            setFormData(prev => ({ ...prev, imagePreview: reader.result as string }))
+            setFormData(prev => ({ ...prev, imagePreview: reader.result as string , file }))
         }
         reader.readAsDataURL(file)
         }
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setIsSending(true);
+
+        let imageUrl: null|string = null
+        if(formData.file){
+            const filePath = `my_images/${formData.file.name}`
+            const { error } = await supabase.storage.from('togo_image_bucket').upload(filePath, formData.file)
+
+            if(error){
+                console.log("Error imageUpload");
+            }else{
+                const { data } = supabase.storage.from('togo_image_bucket').getPublicUrl(filePath)
+                imageUrl = data.publicUrl
+            }
+        }
         // ここでフォームデータを処理します（APIへの送信など）
         console.log('フォームが送信されました', formData)
     }
@@ -174,7 +191,7 @@ export default function NewPostForm() {
                     </div>
                     </Card>
                     
-                    <Button type="submit" className="w-full hover:bg-black hover:text-white">投稿する</Button>
+                    <Button type="submit" className="w-full hover:bg-black hover:text-white">{isSending ? "投稿中..." : "投稿する"}</Button>
                 </form>
             </div>
 
