@@ -8,10 +8,11 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { CalendarIcon, MapPin, Clock, User, PlusCircle } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
-import { getAllTogos } from "@/lib/supabase/supabaseFunctions";
+import { getAllTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
 
@@ -27,6 +28,8 @@ export default function TOGOListMain() {
   const [ searchPregecture , setSearchPregecture ] = useState<string | null>(null);
   const [ searchStartDate , setSearchStartDate ] = useState<Date | undefined>(undefined);
   const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
+  const [ selectedItemId, setSelectedItemId ] = useState<number | null>(null)
+  const [ isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchTogos = async() => {
@@ -57,6 +60,19 @@ export default function TOGOListMain() {
     if(!searchStartDate || !value || searchStartDate > value){
       setSearchStartDate(value)
     }
+  }
+
+  const dialogOpen = (id: number) => {
+    setSelectedItemId(id)
+    setIsDialogOpen(true)
+  }
+
+  const confirmVisited = async() => {
+    if(selectedItemId){
+      await deleteTodo(selectedItemId)
+      setTogos(togos.filter(item => item.id !== selectedItemId))
+    }
+    setIsDialogOpen(false);
   }
 
   // 検索条件に対してフィルター
@@ -206,7 +222,7 @@ export default function TOGOListMain() {
                           </CardContent>
                         </div>
                         <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
-                          <Button variant="destructive">訪問済み</Button>
+                          <Button variant="destructive" onClick={() => dialogOpen(item.id)}>訪問済み</Button>
                         </CardFooter>
                       </div>
                     </div>
@@ -226,6 +242,23 @@ export default function TOGOListMain() {
       <footer className="bg-muted text-muted-foreground p-4 text-center">
         <p>&copy; 2023 TOGOリスト. All rights reserved.</p>
       </footer>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>訪問済みの確認</DialogTitle>
+            <DialogDescription>
+              このアイテムを訪問済みとしてリストから削除しますか？
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 w-full">
+            <Button className="hover:bg-slate-200 mb-2 sm:mb-0" variant="outline" onClick={() => setIsDialogOpen(false)}>キャンセル</Button>
+            <Button className="border border-red-600 hover:bg-red-200 mb-2 sm:mb-0" variant="destructive" onClick={confirmVisited}>削除</Button>
+          </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
