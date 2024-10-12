@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
 import { CalendarIcon, Upload, MapPin, User, Clock } from "lucide-react"
 import Image from 'next/image'
+import Header from '@/app/features/components/Header'
 
 export default function NewPostForm() {
     const [formData, setFormData] = useState({
@@ -44,130 +45,142 @@ export default function NewPostForm() {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">新規投稿</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-            <Label htmlFor="placeName">地名（店舗名など）</Label>
-            <Input id="placeName" name="placeName" value={formData.placeName} onChange={handleInputChange} required />
-            </div>
-            
-            <div>
-            <Label htmlFor="address">住所</Label>
-            <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <Label>開始日</Label>
-                <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!formData.startDate && "text-muted-foreground"}`}
-                    >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.startDate ? format(formData.startDate, "PPP") : <span>開始日を選択</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                    mode="single"
-                    selected={formData.startDate}
-                    onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
-                    initialFocus
-                    />
-                </PopoverContent>
-                </Popover>
-            </div>
-            
-            <div>
-                <Label>終了日</Label>
-                <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!formData.endDate && "text-muted-foreground"}`}
-                    >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.endDate ? format(formData.endDate, "PPP") : <span>終了日を選択</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                    mode="single"
-                    selected={formData.endDate}
-                    onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
-                    initialFocus
-                    />
-                </PopoverContent>
-                </Popover>
-            </div>
-            </div>
-            
-            <div>
-            <Label htmlFor="image">背景画像</Label>
-            <div className="mt-1 flex items-center">
-                <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                />
-                <Label
-                htmlFor="image"
-                className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                <Upload className="h-5 w-5 mr-2" />
-                画像をアップロード
-                </Label>
-            </div>
+        <>
+            <header className="bg-primary text-primary-foreground p-4">
+                <Header />
+            </header>
+            <div className="container mx-auto p-4 max-w-2xl">
+                <h1 className="text-2xl font-bold mb-6">新規投稿</h1>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                    <Label htmlFor="placeName">地名（店舗名など）</Label>
+                    <Input id="placeName" name="placeName" value={formData.placeName} onChange={handleInputChange} required />
+                    </div>
+                    
+                    <div>
+                    <Label htmlFor="address">住所</Label>
+                    <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <Label>開始日</Label>
+                        <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                            variant="outline"
+                            className={`w-full justify-start text-left font-normal ${!formData.startDate && "text-muted-foreground"}`}
+                            >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.startDate ? format(formData.startDate, "PPP") : <span>開始日を選択</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                            mode="single"
+                            selected={formData.startDate}
+                            className='bg-neutral-50'
+                            onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
+                            initialFocus
+                            />
+                        </PopoverContent>
+                        </Popover>
+                    </div>
+                    
+                    <div>
+                        <Label>終了日</Label>
+                        <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                            variant="outline"
+                            className={`w-full justify-start text-left font-normal ${!formData.endDate && "text-muted-foreground"}`}
+                            >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.endDate ? format(formData.endDate, "PPP") : <span>終了日を選択</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                            mode="single"
+                            selected={formData.endDate}
+                            className='bg-neutral-50'
+                            onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
+                            initialFocus
+                            />
+                        </PopoverContent>
+                        </Popover>
+                    </div>
+                    </div>
+                    
+                    <div>
+                    <Label htmlFor="image">背景画像</Label>
+                    <div className="mt-1 flex items-center">
+                        <Input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        />
+                        <Label
+                        htmlFor="image"
+                        className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                        <Upload className="h-5 w-5 mr-2" />
+                        画像をアップロード
+                        </Label>
+                    </div>
+                    </div>
+
+                    {/* プレビューカード */}
+                    <Card className="overflow-hidden">
+                    <Label htmlFor="preview" className='flex justify-center py-2'>プレビュー</Label>
+                    <div className="relative h-64">
+                        {formData.imagePreview ? (
+                        <Image
+                            src={formData.imagePreview}
+                            alt="プレビュー"
+                            fill={true}
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        ) : (
+                        <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-400">画像がアップロードされていません</span>
+                        </div>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+                        <div className="relative h-full p-4 flex flex-col justify-between text-white">
+                        <div>
+                            <h2 className="text-2xl font-bold mb-2">{formData.placeName || "地名を入力してください"}</h2>
+                            <CardContent className="p-0">
+                            <p className="flex items-center text-sm mb-1">
+                                <MapPin className="mr-2 h-4 w-4" /> {formData.address || "住所を入力してください"}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                                <CalendarIcon className="mr-2 h-4 w-4" /> 
+                                {formData.startDate && formData.endDate
+                                ? `${format(formData.startDate, "yyyy年MM月dd日")} - ${format(formData.endDate, "yyyy年MM月dd日")}`
+                                : "期間を選択してください"}
+                            </p>
+                            <p className="flex items-center text-sm mb-1">
+                                <User className="mr-2 h-4 w-4" /> ユーザー名
+                            </p>
+                            <p className="flex items-center text-sm">
+                                <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm")}
+                            </p>
+                            </CardContent>
+                        </div>
+                        </div>
+                    </div>
+                    </Card>
+                    
+                    <Button type="submit" className="w-full hover:bg-black hover:text-white">投稿する</Button>
+                </form>
             </div>
 
-            {/* プレビューカード */}
-            <Card className="overflow-hidden">
-            <div className="relative h-64">
-                {formData.imagePreview ? (
-                <Image
-                    src={formData.imagePreview}
-                    alt="プレビュー"
-                    fill={true}
-                    className="absolute inset-0 w-full h-full object-cover"
-                />
-                ) : (
-                <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">画像がアップロードされていません</span>
-                </div>
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-                <div className="relative h-full p-4 flex flex-col justify-between text-white">
-                <div>
-                    <h2 className="text-2xl font-bold mb-2">{formData.placeName || "地名を入力してください"}</h2>
-                    <CardContent className="p-0">
-                    <p className="flex items-center text-sm mb-1">
-                        <MapPin className="mr-2 h-4 w-4" /> {formData.address || "住所を入力してください"}
-                    </p>
-                    <p className="flex items-center text-sm mb-1">
-                        <CalendarIcon className="mr-2 h-4 w-4" /> 
-                        {formData.startDate && formData.endDate
-                        ? `${format(formData.startDate, "yyyy年MM月dd日")} - ${format(formData.endDate, "yyyy年MM月dd日")}`
-                        : "期間を選択してください"}
-                    </p>
-                    <p className="flex items-center text-sm mb-1">
-                        <User className="mr-2 h-4 w-4" /> ユーザー名
-                    </p>
-                    <p className="flex items-center text-sm">
-                        <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm")}
-                    </p>
-                    </CardContent>
-                </div>
-                </div>
-            </div>
-            </Card>
-            
-            <Button type="submit" className="w-full">投稿する</Button>
-        </form>
-        </div>
+            <footer className="bg-muted text-muted-foreground p-4 text-center">
+                <p>&copy; 2023 TOGOリスト. All rights reserved.</p>
+            </footer>
+        </>
     )
 }
