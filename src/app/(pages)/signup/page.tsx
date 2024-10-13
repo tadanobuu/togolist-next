@@ -147,8 +147,8 @@ export default function SignupPage() {
                     <AlertDescription>{error}</AlertDescription>
                     </Alert>
                 )}
-                <Button type="submit" className="w-full hover:bg-black hover:text-white">
-                    新規アカウント作成
+                <Button type="submit" className="w-full bg-black text-white">
+                    アカウント作成
                 </Button>
                 </div>
             </form>
