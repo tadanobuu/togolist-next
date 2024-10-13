@@ -18,6 +18,9 @@ import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
 import { useRouter } from 'next/router'
+import { Database } from '@/types/supabase'
+
+type newUser = Database['public']['Tables']['users']['Insert'];
 
 export default function SignupPage() {
     const [username, setUsername] = useState('')
@@ -59,16 +62,19 @@ export default function SignupPage() {
             return;
         }
 
-        // フレンドIDを生成
         const friendId = generateFriendId();
 
         // users テーブルにユーザー名とフレンドIDを挿入
-        const { data, error } = await supabase
+        const newUser: newUser= {
+            username,
+            friend_id: friendId
+        }
+        const { data, error: insertError } = await supabase
             .from('users')
-            .insert([{ username, friend_id: friendId }]);
+            .insert([newUser]);
 
-        if (error) {
-            console.error('Error inserting user data:', error);
+        if (insertError) {
+            console.error('Error inserting user data:', insertError);
         } else {
             setIsDialogOpen(true)
             console.log('User profile created:', data);
