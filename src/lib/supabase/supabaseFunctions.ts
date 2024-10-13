@@ -3,31 +3,33 @@ import { supabase } from './supabaseClient'
 import { Database } from '@/types/supabase';
 
 type Togo = Database['public']['Tables']['togo']['Row'];
+type newTogo = Database['public']['Tables']['togo']['Insert'];
+type updateTogo = Database['public']['Tables']['togo']['Update'];
 
 export const getAllTogos = async (): Promise<Togo[]> => {
     const { data , error }: PostgrestResponse<Togo> = await supabase.from("togo").select("*");
 
     if(error){
-        console.log("Error fetch");
+        console.log(error);
         return [];
     }
     return data ?? [];
 };
 
-export const addTogo = async (newTogo: Togo) => {
-    const { data, error } = await supabase.from("togo").insert(newTogo)
+export const addTogo = async (newTogo: newTogo) => {
+    const { data, error } = await supabase.from("togo").upsert(newTogo).select()
 
     if(error){
-        console.log("Error add");
+        console.log(error);
     }
 
     return data;
 }
 
-export const updateTodo = async (newTogo: Togo) => {
-    const { data, error } = await supabase.from('togo').update(newTogo).eq('id', newTogo.id);
+export const updateTodo = async (newTogo: updateTogo) => {
+    const { data, error } = await supabase.from('togo').update(newTogo).eq('id', newTogo.id!);
     if (error){
-        console.log("Error update");
+        console.log(error);
     }
 
     return data;
@@ -36,7 +38,7 @@ export const updateTodo = async (newTogo: Togo) => {
 export const deleteTodo = async (id: number) => {
     const { data, error } = await supabase.from('togo').delete().eq('id', id);
     if (error){
-        console.log("Error delete");
+        console.log(error);
     }
 
     return data;
