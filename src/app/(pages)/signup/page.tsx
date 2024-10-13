@@ -165,7 +165,7 @@ export default function SignupPage() {
         </Card>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white">
             <DialogHeader>
                 <DialogTitle>登録完了</DialogTitle>
                 <DialogDescription>
