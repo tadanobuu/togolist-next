@@ -22,8 +22,8 @@ export default function NewPostForm() {
     const [formData, setFormData] = useState({
         placeName: '',
         address: '',
-        startDate: null as Date | null | undefined,
-        endDate: null as Date | null | undefined,
+        startDate: null as string | null | undefined,
+        endDate: null as string | null | undefined,
         imagePreview: null as string | null,
         file: null as File | null,
     })
@@ -46,6 +46,8 @@ export default function NewPostForm() {
     }
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+        if(isSending) return
+        
         event.preventDefault()
         setIsSending(true);
 
@@ -71,8 +73,8 @@ export default function NewPostForm() {
             prefecture: result.pref,
             lat: result.level ? result.point.lat : null,
             lng: result.level ? result.point.lng : null,
-            startDate: formData.startDate ? null : formData.startDate,
-            endDate: formData.endDate ? null : formData.endDate,
+            startDate: formData.startDate ? formData.startDate : null,
+            endDate: formData.endDate ? formData.endDate : null,
             imageUrl: imageUrl,
             postDatetime: new Date().toString(),
             postUserId: "1",
@@ -111,14 +113,14 @@ export default function NewPostForm() {
                             className={`w-full justify-start text-left font-normal ${!formData.startDate && "text-muted-foreground"}`}
                             >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formData.startDate ? format(formData.startDate, "PPP") : <span>開始日を選択</span>}
+                            {formData.startDate ? formData.startDate : <span>開始日を選択</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                             mode="single"
                             className='bg-neutral-50'
-                            onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
+                            onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date?.toLocaleDateString('sv-SE') }))}
                             initialFocus
                             />
                         </PopoverContent>
@@ -134,14 +136,14 @@ export default function NewPostForm() {
                             className={`w-full justify-start text-left font-normal ${!formData.endDate && "text-muted-foreground"}`}
                             >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formData.endDate ? format(formData.endDate, "PPP") : <span>終了日を選択</span>}
+                            {formData.endDate ? formData.endDate : <span>終了日を選択</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                             mode="single"
                             className='bg-neutral-50'
-                            onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
+                            onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date?.toLocaleDateString('sv-SE') }))}
                             initialFocus
                             />
                         </PopoverContent>
