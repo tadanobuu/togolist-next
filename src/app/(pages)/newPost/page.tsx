@@ -16,6 +16,7 @@ import { supabase } from '@/lib/supabase/supabaseClient'
 import { Database } from "@/types/supabase";
 import { normalize } from '@geolonia/normalize-japanese-addresses'
 import { addTogo } from '@/lib/supabase/supabaseFunctions'
+import { useRouter } from 'next/navigation'
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
 
@@ -29,6 +30,8 @@ export default function NewPostForm() {
         file: null as File | null,
     })
     const [isSending, setIsSending] = useState<boolean>(false)
+
+    const router = useRouter()
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target
@@ -76,12 +79,12 @@ export default function NewPostForm() {
             startDate: formData.startDate ? formData.startDate : null,
             endDate: formData.endDate ? formData.endDate : null,
             imageUrl: imageUrl,
-            postDatetime: new Date().toString(),
+            postDatetime: new Date(new Date().getTime() + 9 * 60 * 60 * 1000),
             postUserId: "1",
         }
 
-        console.log(newTogo);
-        addTogo(newTogo)
+        await addTogo(newTogo)
+        router.push('/main')
     }
 
     return (

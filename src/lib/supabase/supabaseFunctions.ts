@@ -10,17 +10,17 @@ export const getAllTogos = async (): Promise<Togo[]> => {
     const { data , error }: PostgrestResponse<Togo> = await supabase.from("togo").select("*");
 
     if(error){
-        console.log("Error fetch");
+        console.log(error);
         return [];
     }
     return data ?? [];
 };
 
 export const addTogo = async (newTogo: newTogo) => {
-    const { data, error } = await supabase.from("togo").insert(newTogo)
+    const { data, error } = await supabase.from("togo").upsert(newTogo).select()
 
     if(error){
-        console.log("Error add");
+        console.log(error);
     }
 
     return data;
@@ -29,7 +29,7 @@ export const addTogo = async (newTogo: newTogo) => {
 export const updateTodo = async (newTogo: updateTogo) => {
     const { data, error } = await supabase.from('togo').update(newTogo).eq('id', newTogo.id!);
     if (error){
-        console.log("Error update");
+        console.log(error);
     }
 
     return data;
@@ -38,7 +38,7 @@ export const updateTodo = async (newTogo: updateTogo) => {
 export const deleteTodo = async (id: number) => {
     const { data, error } = await supabase.from('togo').delete().eq('id', id);
     if (error){
-        console.log("Error delete");
+        console.log(error);
     }
 
     return data;
