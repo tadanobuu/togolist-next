@@ -15,6 +15,7 @@ import Header from '@/app/features/components/Header'
 import { supabase } from '@/lib/supabase/supabaseClient'
 import { Database } from "@/types/supabase";
 import { normalize } from '@geolonia/normalize-japanese-addresses'
+import { addTogo } from '@/lib/supabase/supabaseFunctions'
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
 
@@ -47,13 +48,13 @@ export default function NewPostForm() {
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         if(isSending) return
-        
+
         event.preventDefault()
         setIsSending(true);
 
         let imageUrl: null|string = null
         if(formData.file){
-            const filePath = `my_images/${formData.file.name}`
+            const filePath = `my_bucket/${formData.file.name}`
             const { error } = await supabase.storage.from('togo_image_bucket').upload(filePath, formData.file)
 
             if(error){
@@ -65,7 +66,6 @@ export default function NewPostForm() {
         }
 
         const result = await normalize(formData.address).then(result => result);
-        console.log(result);
 
         const newTogo: Togo = {
             palceName: formData.placeName,
@@ -81,8 +81,7 @@ export default function NewPostForm() {
         }
 
         console.log(newTogo);
-        // ここでフォームデータを処理します（APIへの送信など）
-        console.log('フォームが送信されました', formData)
+        addTogo(newTogo)
     }
 
     return (
