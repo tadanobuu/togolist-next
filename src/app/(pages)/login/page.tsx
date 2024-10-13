@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
+import { supabase } from '@/lib/supabase/supabaseClient'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
@@ -18,18 +19,25 @@ export default function LoginPage() {
         e.preventDefault()
         setError(null)
         
-        // ここで実際の認証ロジックを実装します
-        // この例では、簡単なバリデーションのみを行っています
         if (!email || !password) {
         setError('メールアドレスとパスワードを入力してください。')
         return
         }
 
-        // ログイン処理（ここではコンソールログのみ）
-        console.log('ログイン試行:', { email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        })
         
-        // 実際のアプリケーションでは、ここでAPIリクエストを送信し、
-        // 成功時にはユーザーをリダイレクトします
+        if (error) {
+            if(error.message === "Email not confirmed"){
+                console.log("送信された確認メールから登録を行ってください")
+            }else{
+                console.log("Error signing in:", error.message)
+            }
+        } else {
+            console.log("User signed in:", data.user)
+        }
     }
 
     return (
@@ -72,9 +80,7 @@ export default function LoginPage() {
                         </Alert>
                     )}
                     <Button type="submit" className="w-full bg-black text-white">
-                        <Link href={"/"}>
-                            ログイン
-                        </Link>
+                        ログイン
                     </Button>
                 </div>
             </form>
