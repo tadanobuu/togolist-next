@@ -17,7 +17,7 @@ import {
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { Database } from '@/types/supabase'
 
 type newUser = Database['public']['Tables']['users']['Insert'];
@@ -31,9 +31,9 @@ export default function SignupPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const router = useRouter()
 
-    // ランダムなフレンドIDを生成する関数（例: 6桁のランダムID）
+    // ランダムなフレンドIDを生成する関数（例: 8桁のランダムID）
     const generateFriendId = () => {
-        return Math.random().toString(36).substring(2, 8);
+        return Math.random().toString(36).substring(2, 10);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +52,7 @@ export default function SignupPage() {
         }
 
         // サインアップ処理
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
         });
@@ -66,10 +66,11 @@ export default function SignupPage() {
 
         // users テーブルにユーザー名とフレンドIDを挿入
         const newUser: newUser= {
+            id: data.user!.id.toString(),
             username,
             friend_id: friendId
         }
-        const { data, error: insertError } = await supabase
+        const { data: insertData, error: insertError } = await supabase
             .from('users')
             .insert([newUser]);
 
@@ -77,7 +78,7 @@ export default function SignupPage() {
             console.error('Error inserting user data:', insertError);
         } else {
             setIsDialogOpen(true)
-            console.log('User profile created:', data);
+            console.log('User profile created:', insertData);
         }
     };
 
