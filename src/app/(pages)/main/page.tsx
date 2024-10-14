@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { CalendarIcon, MapPin, Clock, User, PlusCircle, UserPlus } from "lucide-react"
+import { CalendarIcon, MapPin, Clock, User, PlusCircle, UserPlus, Settings } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
 import { getTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
@@ -38,6 +38,9 @@ export default function TOGOListMain() {
   const [ followId, setFollowId ] = useState<string>("")
   const [ followUsername, setFollowUsername] = useState<string | null>("")
   const [ trigger, setTrigger ] = useState<boolean>(false);
+  const [isUsernameDialogOpen, setIsUsernameDialogOpen] = useState<boolean>(false)
+  const [ newUsername, setNewUsername ] = useState<string>("")
+
 
   const router = useRouter();
 
@@ -147,6 +150,30 @@ export default function TOGOListMain() {
     setIsFriendDialogOpen(false)
   }
 
+  const handleUsernameChange = async() => {
+    if(user){
+      const { error } = await supabase
+        .from('users')
+        .update({ username: newUsername })  // 更新するフィールド
+        .eq('friend_id', user.friend_id!);
+
+      if(error){
+        console.error('Error updating username:', error);
+      }else{
+        setUser({ ...user , username : newUsername });
+        setNewUsername("");
+        setIsUsernameDialogOpen(false);
+      }
+    }
+  }
+
+  const handleUsernameEdit = () => {
+    if(user){
+      setNewUsername(user.username!);
+      setIsUsernameDialogOpen(true);
+    }
+  }
+
   // 検索条件に対してフィルター
   let displayList = togos;
   if(searchText){
@@ -174,14 +201,18 @@ export default function TOGOListMain() {
 
       <main className="flex-grow container mx-auto p-4">
         <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">リスト一覧</h2>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+          <h2 className="text-xl font-semibold hidden sm:inline">リスト一覧</h2>
+          <div className="flex flex-row w-full sm:w-auto justify-around sm:space-x-2">
+            <Button onClick={handleUsernameEdit} className="bg-black text-white rounded-xl">
+              <Settings className="w-4 h-4 mr-0 sm:mr-2" />
+              名前変更
+            </Button>
             <Button onClick={handleFriendRegister} className="bg-black text-white rounded-xl">
-              <UserPlus className="w-4 h-4 mr-2" />
+              <UserPlus className="w-4 h-4 mr-0 sm:mr-2" />
               フォロー管理
             </Button>
             <Button className="bg-black text-white rounded-xl">
-              <PlusCircle className="w-4 h-4 mr-2" />
+              <PlusCircle className="w-4 h-4 mr-1 sm:mr-2" />
               <Link href={"/newPost"}>
                 新規投稿
               </Link>
@@ -377,6 +408,30 @@ export default function TOGOListMain() {
             <Button className="hover:bg-slate-200 mb-2 sm:mb-0" variant="outline" onClick={() => cancelFollow()}>キャンセル</Button>
             <Button className="border border-blue-600 hover:bg-blue-200 mb-2 sm:mb-0" onClick={() => handleFollow()}>フォロー</Button>
           </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isUsernameDialogOpen} onOpenChange={setIsUsernameDialogOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>ユーザー名の変更</DialogTitle>
+            <DialogDescription>
+              新しいユーザー名を入力してください。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="text"
+              placeholder="新しいユーザー名"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              required
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" className="hover:bg-slate-200 mb-2 sm:mb-0" onClick={() => setIsUsernameDialogOpen(false)}>キャンセル</Button>
+            <Button className="border border-green-600 hover:bg-green-200 mb-2 sm:mb-0" onClick={() => handleUsernameChange()}>変更</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
