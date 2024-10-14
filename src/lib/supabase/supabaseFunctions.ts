@@ -12,7 +12,7 @@ export const getTogos = async (userId: userType['friend_id'], followId: userType
         .from("togo")
         .select("*")
         .or(`postUserId.eq.${userId},postUserId.eq.${followId}`)
-        .order('postDateTime', { ascending: false });
+        .order('postDatetime', { ascending: false });
 
     if(error){
         console.log(error);
