@@ -16,7 +16,7 @@ import { getAllTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { User as userType } from "@supabase/supabase-js";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
