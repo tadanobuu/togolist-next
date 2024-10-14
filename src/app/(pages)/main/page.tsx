@@ -9,14 +9,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { CalendarIcon, MapPin, Clock, User, PlusCircle } from "lucide-react"
+import { CalendarIcon, MapPin, Clock, User, PlusCircle, UserPlus } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
-import { getAllTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
+import { getTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
+import { supabase } from "@/lib/supabase/supabaseClient";
+import { useRouter } from 'next/navigation';
 
 type Togo = Database['public']['Tables']['togo']['Row'];
+type userType = Database['public']['Tables']['users']['Row'];
 
 export default function TOGOListMain() {
 
@@ -30,21 +33,50 @@ export default function TOGOListMain() {
   const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
   const [ selectedItemId, setSelectedItemId ] = useState<number | null>(null)
   const [ isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
+  const [ user, setUser ] = useState<userType | null>(null)
+  const [ isFriendDialogOpen, setIsFriendDialogOpen ] = useState(false)
+  const [ followId, setFollowId ] = useState<string>("")
+  const [ trigger, setTrigger ] = useState<boolean>(false);
+
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchTogos = async() => {
+    const checkUser = async () => {
+      const { data: session } = await supabase.auth.getSession();
+
+      if (!session?.session?.user) {
+        router.push('/login');
+      } else {
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('*') 
+          .eq('id', session?.session?.user.id);  
+
+        if (error) {
+          console.error('Error fetching user data:', error);
+        } else {
+          setUser(userData[0]);
+          setFollowId(userData[0].follow_id ? userData[0].follow_id : "")
+          return userData[0];
+        }
+      }
+    };
+
+    const fetchTogos = async(user: userType) => {
       try{
-        setIsLoading(true)
-        const data = await getAllTogos();
-        setTogos(data)
-        setIsLoading(false)
+        if(user){
+          setIsLoading(true)
+          const data = await getTogos(user?.friend_id , followId);
+          setTogos(data)
+          setIsLoading(false)
+        }
       } catch (error) {
         console.log(error)
       }
-    }
+    };
 
-    fetchTogos();
-  },[])
+    checkUser().then((user) => user ? fetchTogos(user) : console.log(user));
+  },[router,trigger])
 
   const startDateChange = (value: Date | undefined) => {
     setSearchStartDate(value)
@@ -75,6 +107,31 @@ export default function TOGOListMain() {
     setIsDialogOpen(false);
   }
 
+  const handleFriendRegister = () => {
+    setIsFriendDialogOpen(true)
+  }
+
+  const cancelFollow = () => {
+    if(user) setFollowId(user.follow_id ? user.follow_id : "")
+    setIsFriendDialogOpen(false)
+  }
+
+  const handleFollow = async() => {
+    if(user){
+      const { error } = await supabase
+      .from('users')
+      .update({ follow_id: followId })
+      .eq('id', user.id);
+  
+      if (error) {
+        console.error('Error updating follow_id:', error);
+      } else {
+        setTrigger(!trigger)
+      }
+    }
+    setIsFriendDialogOpen(false)
+  }
+
   // 検索条件に対してフィルター
   let displayList = togos;
   if(searchText){
@@ -97,18 +154,24 @@ export default function TOGOListMain() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-primary text-primary-foreground p-4">
-        <Header />
+        <Header user={user} />
       </header>
 
       <main className="flex-grow container mx-auto p-4">
         <div className="mb-4 flex justify-between items-center">
           <h2 className="text-xl font-semibold">リスト一覧</h2>
-          <Button className="bg-black text-white rounded-xl">
-            <PlusCircle className="w-4 h-4 mr-2" />
-            <Link href={"/newPost"}>
-              新規投稿
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button onClick={handleFriendRegister} className="bg-black text-white rounded-xl">
+              <UserPlus className="w-4 h-4 mr-2" />
+              フォロー管理
+            </Button>
+            <Button className="bg-black text-white rounded-xl">
+              <PlusCircle className="w-4 h-4 mr-2" />
+              <Link href={"/newPost"}>
+                新規投稿
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mb-4 space-y-2">
@@ -213,7 +276,7 @@ export default function TOGOListMain() {
                               <CalendarIcon className="mr-2 h-4 w-4" /> {item.startDate} - {item.endDate}
                             </p>
                             <p className="flex items-center text-sm mb-1">
-                              <User className="mr-2 h-4 w-4" /> ユーザー{item.postUserId}
+                              <User className="mr-2 h-4 w-4" /> {item.postUserId}
                             </p>
                             <p className="flex items-center text-sm">
                               <Clock className="mr-2 h-4 w-4" /> 
@@ -221,9 +284,14 @@ export default function TOGOListMain() {
                             </p>
                           </CardContent>
                         </div>
-                        <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
-                          <Button variant="destructive" onClick={() => dialogOpen(item.id)}>訪問済み</Button>
-                        </CardFooter>
+                        {
+                          item.postUserId === user?.friend_id ?
+                          <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
+                            <Button variant="destructive" onClick={() => dialogOpen(item.id)}>訪問済み</Button>
+                          </CardFooter>
+                          :
+                          <></>
+                        }
                       </div>
                     </div>
                   </Card>
@@ -255,6 +323,35 @@ export default function TOGOListMain() {
           <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 w-full">
             <Button className="hover:bg-slate-200 mb-2 sm:mb-0" variant="outline" onClick={() => setIsDialogOpen(false)}>キャンセル</Button>
             <Button className="border border-red-600 hover:bg-red-200 mb-2 sm:mb-0" variant="destructive" onClick={confirmVisited}>削除</Button>
+          </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isFriendDialogOpen} onOpenChange={setIsFriendDialogOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>フォロー管理</DialogTitle>
+            <DialogDescription>
+              <div>フォローしたいユーザーのフレンドIDを入力してください。</div>
+              <div>※1人まで登録可能です。</div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="text"
+              placeholder="フレンドID"
+              value={followId}
+              onChange={(e) => setFollowId(e.target.value)}
+            />
+          </div>
+          <div>
+            あなたのフレンドID: {user?.friend_id}
+          </div>
+          <DialogFooter>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 w-full">
+            <Button className="hover:bg-slate-200 mb-2 sm:mb-0" variant="outline" onClick={() => cancelFollow()}>キャンセル</Button>
+            <Button className="border border-blue-600 hover:bg-blue-200 mb-2 sm:mb-0" onClick={() => handleFollow()}>フォロー</Button>
           </div>
           </DialogFooter>
         </DialogContent>

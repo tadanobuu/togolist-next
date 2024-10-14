@@ -5,9 +5,13 @@ import { Database } from '@/types/supabase';
 type Togo = Database['public']['Tables']['togo']['Row'];
 type newTogo = Database['public']['Tables']['togo']['Insert'];
 type updateTogo = Database['public']['Tables']['togo']['Update'];
+type userType = Database['public']['Tables']['users']['Row'];
 
-export const getAllTogos = async (): Promise<Togo[]> => {
-    const { data , error }: PostgrestResponse<Togo> = await supabase.from("togo").select("*");
+export const getTogos = async (userId: userType['friend_id'], followId: userType['follow_id']): Promise<Togo[]> => {
+    const { data , error }: PostgrestResponse<Togo> = await supabase
+        .from("togo")
+        .select("*")
+        .or(`postUserId.eq.${userId},postUserId.eq.${followId}`);
 
     if(error){
         console.log(error);

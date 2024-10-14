@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
