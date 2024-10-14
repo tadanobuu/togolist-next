@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +19,7 @@ import { addTogo } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
+type userType = Database['public']['Tables']['users']['Row'];
 
 export default function NewPostForm() {
     const [formData, setFormData] = useState({
@@ -30,8 +31,33 @@ export default function NewPostForm() {
         file: null as File | null,
     })
     const [isSending, setIsSending] = useState<boolean>(false)
+    const [ user, setUser ] = useState<userType | null>(null)
 
     const router = useRouter()
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: session } = await supabase.auth.getSession();
+
+            if (!session?.session?.user) {
+                router.push('/login');
+            } else {
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('*') 
+                    .eq('id', session?.session?.user.id);  
+
+            if (error) {
+                console.error('Error fetching user data:', error);
+            } else {
+                setUser(userData[0]);
+                return userData[0];
+            }
+            }
+        };
+
+        checkUser()
+    }, [router])
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target
@@ -80,7 +106,7 @@ export default function NewPostForm() {
             endDate: formData.endDate ? formData.endDate : null,
             imageUrl: imageUrl,
             postDatetime: new Date(new Date().getTime() + 9 * 60 * 60 * 1000),
-            postUserId: "1",
+            postUserId: user?.friend_id,
         }
 
         await addTogo(newTogo)
@@ -90,7 +116,7 @@ export default function NewPostForm() {
     return (
         <>
             <header className="bg-primary text-primary-foreground p-4">
-                <Header />
+                <Header user={user} />
             </header>
             <div className="container mx-auto p-4 max-w-2xl">
                 <h1 className="text-2xl font-bold mb-6">新規投稿</h1>
@@ -199,12 +225,10 @@ export default function NewPostForm() {
                             </p>
                             <p className="flex items-center text-sm mb-1">
                                 <CalendarIcon className="mr-2 h-4 w-4" /> 
-                                {formData.startDate && formData.endDate
-                                ? `${format(formData.startDate, "yyyy年MM月dd日")} - ${format(formData.endDate, "yyyy年MM月dd日")}`
-                                : "期間を選択してください"}
+                                {formData.startDate ? format(formData.startDate, "yyyy年MM月dd日") : ""} - {formData.endDate ? format(formData.endDate, "yyyy年MM月dd日") : ""}
                             </p>
                             <p className="flex items-center text-sm mb-1">
-                                <User className="mr-2 h-4 w-4" /> ユーザー名
+                                <User className="mr-2 h-4 w-4" /> {user?.username}
                             </p>
                             <p className="flex items-center text-sm">
                                 <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm")}
