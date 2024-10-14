@@ -36,6 +36,7 @@ export default function TOGOListMain() {
   const [ user, setUser ] = useState<userType | null>(null)
   const [ isFriendDialogOpen, setIsFriendDialogOpen ] = useState(false)
   const [ followId, setFollowId ] = useState<string>("")
+  const [ followUsername, setFollowUsername] = useState<string | null>("")
   const [ trigger, setTrigger ] = useState<boolean>(false);
 
   const router = useRouter();
@@ -56,7 +57,21 @@ export default function TOGOListMain() {
           console.error('Error fetching user data:', error);
         } else {
           setUser(userData[0]);
-          setFollowId(userData[0].follow_id ? userData[0].follow_id : "")
+
+          if(userData[0].follow_id){
+            setFollowId(userData[0].follow_id)
+  
+            const { data: followUsername, error } = await supabase
+            .from('users')
+            .select('username') 
+            .eq('friend_id', userData[0]!.follow_id); 
+            if(error){
+              console.log(error)
+            }else{
+              setFollowUsername(followUsername.length ? followUsername[0].username : "")
+            }
+          }
+
           return userData[0];
         }
       }
@@ -65,8 +80,7 @@ export default function TOGOListMain() {
     const fetchTogos = async(user: userType) => {
       try{
         if(user){
-          setIsLoading(true)
-          const data = await getTogos(user?.friend_id , followId);
+          const data = await getTogos(user.friend_id , user.follow_id);
           setTogos(data)
           setIsLoading(false)
         }
@@ -75,6 +89,7 @@ export default function TOGOListMain() {
       }
     };
 
+    setIsLoading(true)
     checkUser().then((user) => user ? fetchTogos(user) : console.log(user));
   },[router,trigger])
 
@@ -195,8 +210,8 @@ export default function TOGOListMain() {
               </SelectTrigger>
               <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての投稿者</SelectItem>
-                <SelectItem value="user1">ユーザー1</SelectItem>
-                <SelectItem value="user2">ユーザー2</SelectItem>
+                <SelectItem value={user?.friend_id ? user?.friend_id : "a"}>{user?.username}</SelectItem>
+                <SelectItem value={followId ? followId : "a"}>{followUsername}</SelectItem>
               </SelectContent>
             </Select>
             <Select onValueChange={(value: string) => setSearchPregecture(value)}>
@@ -276,11 +291,20 @@ export default function TOGOListMain() {
                               <CalendarIcon className="mr-2 h-4 w-4" /> {item.startDate} - {item.endDate}
                             </p>
                             <p className="flex items-center text-sm mb-1">
-                              <User className="mr-2 h-4 w-4" /> {item.postUserId}
+                              <User className="mr-2 h-4 w-4" /> 
+                              {item.postUserId === user?.friend_id ? 
+                                user.username : 
+                                item.postUserId === followId ?
+                                  followUsername : 
+                                  ""
+                              }
                             </p>
                             <p className="flex items-center text-sm">
                               <Clock className="mr-2 h-4 w-4" /> 
-                              {item.postDatetime ? item.postDatetime.toLocaleString().replace("T"," ") : ""}
+                              {item.postDatetime ?
+                                item.postDatetime.toLocaleString().replace("T"," ").replace(".", "").slice(0, -3) :
+                                ""
+                              }
                             </p>
                           </CardContent>
                         </div>
