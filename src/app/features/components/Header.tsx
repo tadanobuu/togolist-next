@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { Database } from "@/types/supabase";
-import { LogOut, User, Edit2 } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import { useRouter } from 'next/navigation'
 
 type userType = Database['public']['Tables']['users']['Row'];
@@ -9,7 +9,7 @@ type props = {
     user: userType | null
 }
 
-const Header = ( {user , }: props ) => {
+const Header = ( { user }: props ) => {
 
     const router = useRouter()
 
