@@ -268,7 +268,7 @@ export default function TOGOListMain() {
             <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
               { isLoading ? <h3 className="font-bold">loading...</h3> :
                 displayList.map((item: Togo) => (
-                  <Card key={item.id} className="overflow-hidden">
+                  <Card key={item.id} className="overflow-hidden rounded-2xl">
                     <div className="relative h-64">
                       {item.imageUrl ? 
                       <Image
