@@ -9,11 +9,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
+import { useRouter } from 'next/router'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
+
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -24,7 +27,7 @@ export default function LoginPage() {
         return
         }
 
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
@@ -36,7 +39,7 @@ export default function LoginPage() {
                 console.log("Error signing in:", error.message)
             }
         } else {
-            console.log("User signed in:", data.user)
+            router.push('/main')
         }
     }
 
