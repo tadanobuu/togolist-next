@@ -11,7 +11,8 @@ export const getTogos = async (userId: userType['friend_id'], followId: userType
     const { data , error }: PostgrestResponse<Togo> = await supabase
         .from("togo")
         .select("*")
-        .or(`postUserId.eq.${userId},postUserId.eq.${followId}`);
+        .or(`postUserId.eq.${userId},postUserId.eq.${followId}`)
+        .order('postDateTime', { ascending: false });
 
     if(error){
         console.log(error);
