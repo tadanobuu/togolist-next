@@ -15,6 +15,9 @@ import Link from "next/link";
 import { getAllTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
+import { supabase } from "@/lib/supabase/supabaseClient";
+import { useRouter } from 'next/router';
+import { User as userType } from "@supabase/supabase-js";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 
@@ -30,6 +33,9 @@ export default function TOGOListMain() {
   const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
   const [ selectedItemId, setSelectedItemId ] = useState<number | null>(null)
   const [ isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
+  const [ user, setUser ] = useState<userType | null>(null)
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTogos = async() => {
@@ -45,6 +51,21 @@ export default function TOGOListMain() {
 
     fetchTogos();
   },[])
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: session } = await supabase.auth.getSession();
+
+      if (!session?.session?.user) {
+        // 認証されていない場合はログインページへリダイレクト
+        router.push('/login');
+      } else {
+        // 認証されたユーザーを保存
+        setUser(session.session.user);
+      }
+    };
+    checkUser();
+  },[router])
 
   const startDateChange = (value: Date | undefined) => {
     setSearchStartDate(value)
@@ -93,6 +114,8 @@ export default function TOGOListMain() {
         (!item.endDate || new Date(item.endDate + "T00:00:00") >= searchStartDate)
     )})
   };
+
+  console.log(user);
 
   return (
     <div className="flex flex-col min-h-screen">
