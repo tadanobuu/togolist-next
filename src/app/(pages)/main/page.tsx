@@ -17,6 +17,7 @@ import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
+import { prefectures } from "@/lib/prefectures";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
@@ -52,6 +53,7 @@ export default function TOGOListMain() {
       if (!session?.session?.user) {
         router.push('/login');
       } else {
+        setIsLoading(true)
         const { data: userData, error } = await supabase
           .from('users')
           .select('*') 
@@ -93,7 +95,6 @@ export default function TOGOListMain() {
       }
     };
 
-    setIsLoading(true)
     checkUser().then((user) => user ? fetchTogos(user) : console.log(user));
   },[router,trigger])
 
@@ -253,8 +254,9 @@ export default function TOGOListMain() {
               </SelectTrigger>
               <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての都道府県</SelectItem>
-                <SelectItem value="tokyo">東京都</SelectItem>
-                <SelectItem value="osaka">大阪府</SelectItem>
+                {prefectures.map(prefecture => {
+                  return <SelectItem value={prefecture}>{prefecture}</SelectItem>
+                })}
               </SelectContent>
             </Select>
             <Popover>
