@@ -40,10 +40,18 @@ export const updateTodo = async (newTogo: updateTogo) => {
     return data;
 };
 
-export const deleteTodo = async (id: number) => {
+export const deleteTodo = async (id: number, imagePath: string | null) => {
     const { data, error } = await supabase.from('togo').delete().eq('id', id);
     if (error){
         console.log(error);
+    }
+
+    if(imagePath){
+        const { error } = await supabase.storage.from("togo_image_bucket").remove([imagePath]);
+
+        if(error){
+            console.log(error)
+        }
     }
 
     return data;
