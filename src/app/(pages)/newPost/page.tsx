@@ -82,8 +82,9 @@ export default function NewPostForm() {
         setIsSending(true);
 
         let imageUrl: null|string = null
+        let filePath: null|string = null
         if(formData.file){
-            const filePath = `my_bucket/${formData.file.name}`
+            filePath = `my_bucket/${formData.file.name}`
             const { error } = await supabase.storage.from('togo_image_bucket').upload(filePath, formData.file)
 
             if(error){
@@ -107,6 +108,7 @@ export default function NewPostForm() {
             imageUrl: imageUrl,
             postDatetime: new Date(new Date().getTime() + 9 * 60 * 60 * 1000),
             postUserId: user?.friend_id,
+            imagePath: filePath
         }
 
         await addTogo(newTogo)
