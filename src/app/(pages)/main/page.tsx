@@ -32,6 +32,7 @@ export default function TOGOListMain() {
   const [ searchStartDate , setSearchStartDate ] = useState<Date | undefined>(undefined);
   const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
   const [ selectedItemId, setSelectedItemId ] = useState<number | null>(null)
+  const [ selectedItemImagePath, setSelectedItemImagePath ] = useState<string | null>(null)
   const [ isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
   const [ user, setUser ] = useState<userType | null>(null)
   const [ isFriendDialogOpen, setIsFriendDialogOpen ] = useState(false)
@@ -112,14 +113,15 @@ export default function TOGOListMain() {
     }
   }
 
-  const dialogOpen = (id: number) => {
+  const dialogOpen = (id: number, imagePath: string | null) => {
     setSelectedItemId(id)
+    setSelectedItemImagePath(imagePath)
     setIsDialogOpen(true)
   }
 
   const confirmVisited = async() => {
     if(selectedItemId){
-      await deleteTodo(selectedItemId)
+      await deleteTodo(selectedItemId, selectedItemImagePath)
       setTogos(togos.filter(item => item.id !== selectedItemId))
     }
     setIsDialogOpen(false);
@@ -342,7 +344,7 @@ export default function TOGOListMain() {
                         {
                           item.postUserId === user?.friend_id ?
                           <CardFooter className="p-0 border absolute bottom-6 right-8 hover:bg-blue-300">
-                            <Button variant="destructive" onClick={() => dialogOpen(item.id)}>訪問済み</Button>
+                            <Button variant="destructive" onClick={() => dialogOpen(item.id, item.imagePath)}>訪問済み</Button>
                           </CardFooter>
                           :
                           <></>
