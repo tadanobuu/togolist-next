@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,9 @@ import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { Database } from '@/types/supabase'
+
+type newUser = Database['public']['Tables']['users']['Insert'];
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
@@ -42,6 +45,57 @@ export default function LoginPage() {
             router.push('/main')
         }
     }
+
+    const handleGoogleLogin = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: 'http://localhost:3000/main',
+            },
+        });
+        if (error) {
+            console.error('Google login error:', error.message);
+        }
+    };
+    
+    useEffect(() => {
+        const { data: authListener } = supabase.auth.onAuthStateChange(
+            async (event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    const { user } = session;
+        
+                    // 新規ユーザーかUUIDで確認
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', user.id);
+        
+                    if (!data || data.length === 0) {
+                        const userinfo: newUser = {
+                            id: user.id,
+                            username: "新規ユーザー",
+                            friend_id: Math.random().toString(36).substring(2, 10),
+                            follow_id: null
+                        }
+
+                        const { error: insertError } = await supabase.from('users').insert([userinfo]);
+        
+                        if (insertError) {
+                            console.error('Error inserting user into users table:', insertError.message);
+                        } else {
+                            console.log('User inserted into users table successfully');
+                        }      
+                    }
+
+                    router.push('/main'); // ログイン後に/mainへ移動
+                }
+            }
+        );
+    
+        return () => {
+            authListener?.subscription?.unsubscribe();
+        };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col justify-center items-center p-4">
@@ -87,6 +141,27 @@ export default function LoginPage() {
                     </Button>
                 </div>
             </form>
+            <div className="mt-4 relative">
+                <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+            </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                        または
+                    </span>
+                </div>
+            </div>
+            <Button
+                type="button"
+                variant="outline"
+                className="w-full mt-4 bg-white text-gray-700 hover:bg-gray-300"
+                onClick={() => handleGoogleLogin()}
+            >
+                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                </svg>
+                Googleでログイン
+            </Button>
             </CardContent>
             <CardFooter className="flex flex-col space-y-2">
             <Link href="/forgot-password" className="text-sm text-primary hover:underline">
@@ -94,7 +169,7 @@ export default function LoginPage() {
             </Link>
             <div className="text-sm text-muted-foreground">
                 アカウントをお持ちでない場合は
-                <Link href="/signup" className="text-primary hover:underline ml-1">
+                <Link href="/signup" className="text-primary underline ml-1">
                 新規登録
                 </Link>
                 してください。
