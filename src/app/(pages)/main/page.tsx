@@ -21,6 +21,7 @@ import { prefectures } from "@/lib/prefectures";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
+type newUser = Database['public']['Tables']['users']['Insert'];
 
 export default function TOGOListMain() {
 
@@ -61,6 +62,22 @@ export default function TOGOListMain() {
 
         if (error) {
           console.error('Error fetching user data:', error);
+        } else if( !userData || userData.length === 0 ){
+              const userinfo: newUser = {
+                id: session.session.user.id,
+                username: "新規ユーザー",
+                friend_id: Math.random().toString(36).substring(2, 10),
+                follow_id: null,
+              };
+      
+              const { error: insertError } = await supabase.from('users').insert(userinfo);
+      
+              if (insertError) {
+                console.error('Error inserting user into users table:', insertError.message);
+              } else {
+                console.log('User inserted into users table successfully');
+              }
+              setTrigger(!trigger)
         } else {
           setUser(userData[0]);
 
