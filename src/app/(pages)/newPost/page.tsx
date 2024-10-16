@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Undo2 } from "lucide-react"
-import Header from '@/app/features/components/Header'
+import Header from '@/components/Header'
 import { supabase } from '@/lib/supabase/supabaseClient'
 import { Database } from "@/types/supabase";
 import { normalize } from '@geolonia/normalize-japanese-addresses'
 import { addImage, addTogo, getUser } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
-import Footer from '@/app/features/components/Footer'
+import Footer from '@/components/Footer'
 import Link from "next/link";
 import Preview from '@/app/features/components/newPost/Preview'
 import BackgroundImage from '@/app/features/components/newPost/BackgroundImage'
