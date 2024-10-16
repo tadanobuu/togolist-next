@@ -14,11 +14,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTogos, deleteTodo, getUser, addUser, getFirendUser, updateFirendId, updateUsername } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
-import Header from "@/app/features/components/Header";
+import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
 import { prefectures } from "@/lib/prefectures";
-import Footer from "@/app/features/components/Footer";
+import Footer from "@/components/Footer";
 import { createNewUser } from "@/lib/createNewUser";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
@@ -184,9 +184,7 @@ export default function TOGOListMain() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-primary text-primary-foreground p-4">
-        <Header user={user} />
-      </header>
+      <Header user={user} />
 
       <main className="flex-grow container mx-auto p-4">
         <div className="mb-4 flex justify-between items-center">
