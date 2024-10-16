@@ -8,13 +8,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import { supabase } from '@/lib/supabase/supabaseClient'
+import { signinWithGoogleOAuth, signinWithPassword } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
-import { Database } from '@/types/supabase'
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
 
     const router = useRouter()
@@ -24,36 +23,18 @@ export default function LoginPage() {
         setError(null)
         
         if (!email || !password) {
-        setError('メールアドレスとパスワードを入力してください。')
-        return
-        }
-
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-        
-        if (error) {
-            if(error.message === "Email not confirmed"){
-                console.log("送信された確認メールから登録を行ってください")
-            }else{
-                console.log("Error signing in:", error.message)
+            setError('メールアドレスとパスワードを入力してください。')
+            return
+        }else{
+            const { error } = await signinWithPassword(email, password)
+            if(!error){
+                router.push('/main');
             }
-        } else {
-            router.push('/main')
         }
     }
 
     const handleGoogleLogin = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: 'http://localhost:3000/main',
-            },
-        })
-        if (error) {
-            console.error('Google login error:', error.message);
-        }
+        await signinWithGoogleOAuth()
     };
 
     return (

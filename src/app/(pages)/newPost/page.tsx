@@ -17,6 +17,7 @@ import { Database } from "@/types/supabase";
 import { normalize } from '@geolonia/normalize-japanese-addresses'
 import { addTogo } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
+import Footer from '@/app/features/components/Footer'
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
 type userType = Database['public']['Tables']['users']['Row'];
@@ -245,9 +246,7 @@ export default function NewPostForm() {
                 </form>
             </div>
 
-            <footer className="bg-muted text-muted-foreground p-4 text-center">
-                <p>&copy; 2023 TOGOリスト. All rights reserved.</p>
-            </footer>
+            <Footer />
         </>
     )
 }
