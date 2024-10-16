@@ -17,9 +17,11 @@ import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
+import { prefectures } from "@/lib/prefectures";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
+type newUser = Database['public']['Tables']['users']['Insert'];
 
 export default function TOGOListMain() {
 
@@ -52,6 +54,7 @@ export default function TOGOListMain() {
       if (!session?.session?.user) {
         router.push('/login');
       } else {
+        setIsLoading(true)
         const { data: userData, error } = await supabase
           .from('users')
           .select('*') 
@@ -59,6 +62,22 @@ export default function TOGOListMain() {
 
         if (error) {
           console.error('Error fetching user data:', error);
+        } else if( !userData || userData.length === 0 ){
+              const userinfo: newUser = {
+                id: session.session.user.id,
+                username: "新規ユーザー",
+                friend_id: Math.random().toString(36).substring(2, 10),
+                follow_id: null,
+              };
+      
+              const { error: insertError } = await supabase.from('users').insert(userinfo);
+      
+              if (insertError) {
+                console.error('Error inserting user into users table:', insertError.message);
+              } else {
+                console.log('User inserted into users table successfully');
+              }
+              setTrigger(!trigger)
         } else {
           setUser(userData[0]);
 
@@ -93,7 +112,6 @@ export default function TOGOListMain() {
       }
     };
 
-    setIsLoading(true)
     checkUser().then((user) => user ? fetchTogos(user) : console.log(user));
   },[router,trigger])
 
@@ -253,8 +271,9 @@ export default function TOGOListMain() {
               </SelectTrigger>
               <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての都道府県</SelectItem>
-                <SelectItem value="tokyo">東京都</SelectItem>
-                <SelectItem value="osaka">大阪府</SelectItem>
+                {prefectures.map(prefecture => {
+                  return <SelectItem value={prefecture}>{prefecture}</SelectItem>
+                })}
               </SelectContent>
             </Select>
             <Popover>
