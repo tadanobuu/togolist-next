@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,8 +11,6 @@ import { MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { Database } from '@/types/supabase'
-
-type newUser = Database['public']['Tables']['users']['Insert'];
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
@@ -52,50 +50,11 @@ export default function LoginPage() {
             options: {
                 redirectTo: 'http://localhost:3000/main',
             },
-        });
+        })
         if (error) {
             console.error('Google login error:', error.message);
         }
     };
-    
-    useEffect(() => {
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                if (event === 'SIGNED_IN' && session) {
-                    const { user } = session;
-        
-                    // 新規ユーザーかUUIDで確認
-                    const { data, error } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', user.id);
-        
-                    if (!data || data.length === 0) {
-                        const userinfo: newUser = {
-                            id: user.id,
-                            username: "新規ユーザー",
-                            friend_id: Math.random().toString(36).substring(2, 10),
-                            follow_id: null
-                        }
-
-                        const { error: insertError } = await supabase.from('users').insert([userinfo]);
-        
-                        if (insertError) {
-                            console.error('Error inserting user into users table:', insertError.message);
-                        } else {
-                            console.log('User inserted into users table successfully');
-                        }      
-                    }
-
-                    router.push('/main'); // ログイン後に/mainへ移動
-                }
-            }
-        );
-    
-        return () => {
-            authListener?.subscription?.unsubscribe();
-        };
-    }, []);
 
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col justify-center items-center p-4">
