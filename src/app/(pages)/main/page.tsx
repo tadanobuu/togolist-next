@@ -241,7 +241,7 @@ export default function TOGOListMain() {
               <SelectContent className="bg-neutral-50">
                 <SelectItem value="ALL">全ての都道府県</SelectItem>
                 {prefectures.map(prefecture => {
-                  return <SelectItem value={prefecture}>{prefecture}</SelectItem>
+                  return <SelectItem key={prefecture} value={prefecture}>{prefecture}</SelectItem>
                 })}
               </SelectContent>
             </Select>
