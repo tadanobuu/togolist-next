@@ -184,9 +184,7 @@ export default function TOGOListMain() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-primary text-primary-foreground p-4">
-        <Header user={user} />
-      </header>
+      <Header user={user} />
 
       <main className="flex-grow container mx-auto p-4">
         <div className="mb-4 flex justify-between items-center">

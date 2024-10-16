@@ -83,9 +83,7 @@ export default function NewPostForm() {
 
     return (
         <>
-            <header className="bg-primary text-primary-foreground p-4">
-                <Header user={user} />
-            </header>
+            <Header user={user} />
 
             <div className="container mx-auto p-4 max-w-2xl">
                 <div className="mb-4 flex justify-between items-center">
