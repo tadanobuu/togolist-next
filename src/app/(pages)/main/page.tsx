@@ -18,6 +18,7 @@ import Header from "@/app/features/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
 import { prefectures } from "@/lib/prefectures";
+import Footer from "@/app/features/components/Footer";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
@@ -383,9 +384,7 @@ export default function TOGOListMain() {
         </Tabs>
       </main>
 
-      <footer className="bg-muted text-muted-foreground p-4 text-center">
-        <p>&copy; 2023 TOGOリスト. All rights reserved.</p>
-      </footer>
+      <Footer />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="bg-white">
