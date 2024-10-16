@@ -12,13 +12,14 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CalendarIcon, MapPin, Clock, User, PlusCircle, UserPlus, Settings } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
-import { getTogos, deleteTodo } from "@/lib/supabase/supabaseFunctions";
+import { getTogos, deleteTodo, getUser, addUser, getFirendUser, updateFirendId, updateUsername } from "@/lib/supabase/supabaseFunctions";
 import { Database } from "@/types/supabase";
 import Header from "@/app/features/components/Header";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
 import { prefectures } from "@/lib/prefectures";
 import Footer from "@/app/features/components/Footer";
+import { createNewUser } from "@/lib/createNewUser";
 
 type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
@@ -56,43 +57,21 @@ export default function TOGOListMain() {
         router.push('/login');
       } else {
         setIsLoading(true)
-        const { data: userData, error } = await supabase
-          .from('users')
-          .select('*') 
-          .eq('id', session?.session?.user.id);  
-
-        if (error) {
-          console.error('Error fetching user data:', error);
-        } else if( !userData || userData.length === 0 ){
-              const userinfo: newUser = {
-                id: session.session.user.id,
-                username: "新規ユーザー",
-                friend_id: Math.random().toString(36).substring(2, 10),
-                follow_id: null,
-              };
-      
-              const { error: insertError } = await supabase.from('users').insert(userinfo);
-      
-              if (insertError) {
-                console.error('Error inserting user into users table:', insertError.message);
-              } else {
-                console.log('User inserted into users table successfully');
-              }
+        const { userData, error } = await getUser(session?.session?.user.id)
+        if( error ) return
+        if( !userData || userData.length === 0 ){
+              const userinfo: newUser = createNewUser(session.session.user.id, "新規ユーザー");
+              await addUser(userinfo)
               setTrigger(!trigger)
         } else {
           setUser(userData[0]);
 
           if(userData[0].follow_id){
             setFollowId(userData[0].follow_id)
-  
-            const { data: followUsername, error } = await supabase
-            .from('users')
-            .select('username') 
-            .eq('friend_id', userData[0]!.follow_id); 
-            if(error){
-              console.log(error)
-            }else{
-              setFollowUsername(followUsername.length ? followUsername[0].username : "")
+
+            const { data } = await getFirendUser(userData[0])
+            if(data){
+              setFollowUsername(data.length ? data[0].username : "")
             }
           }
 
@@ -157,14 +136,8 @@ export default function TOGOListMain() {
 
   const handleFollow = async() => {
     if(user){
-      const { error } = await supabase
-      .from('users')
-      .update({ follow_id: followId })
-      .eq('id', user.id);
-  
-      if (error) {
-        console.error('Error updating follow_id:', error);
-      } else {
+      const { error } = await updateFirendId(user, followId)
+      if(!error) {
         setTrigger(!trigger)
       }
     }
@@ -173,14 +146,9 @@ export default function TOGOListMain() {
 
   const handleUsernameChange = async() => {
     if(user){
-      const { error } = await supabase
-        .from('users')
-        .update({ username: newUsername })  // 更新するフィールド
-        .eq('friend_id', user.friend_id!);
+      const { error } = await updateUsername(user, newUsername)
 
-      if(error){
-        console.error('Error updating username:', error);
-      }else{
+      if(!error){
         setUser({ ...user , username : newUsername });
         setNewUsername("");
         setIsUsernameDialogOpen(false);

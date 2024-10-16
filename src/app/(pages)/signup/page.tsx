@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/dialog"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import { supabase } from '@/lib/supabase/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { Database } from '@/types/supabase'
+import { addUser, signUp } from '@/lib/supabase/supabaseFunctions'
+import { createNewUser } from '@/lib/createNewUser'
 
 type newUser = Database['public']['Tables']['users']['Insert'];
 
@@ -29,12 +30,8 @@ export default function SignupPage() {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
-
-    // ランダムなフレンドIDを生成する関数（例: 8桁のランダムID）
-    const generateFriendId = () => {
-        return Math.random().toString(36).substring(2, 10);
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -51,35 +48,24 @@ export default function SignupPage() {
         return
         }
 
+        setLoading(true)
+
         // サインアップ処理
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
+        const { data, error } = await signUp(email, password)
 
         if (error) {
             console.error('Error signing up:', error.message);
             return;
         }
 
-        const friendId = generateFriendId();
+        const newUser: newUser = createNewUser(data.user!.id.toString(), username)
+        const { error: insertError } = await addUser(newUser)
 
-        // users テーブルにユーザー名とフレンドIDを挿入
-        const newUser: newUser= {
-            id: data.user!.id.toString(),
-            username,
-            friend_id: friendId
+        if (!insertError) {
+            setIsDialogOpen(true);
         }
-        const { data: insertData, error: insertError } = await supabase
-            .from('users')
-            .insert([newUser]);
 
-        if (insertError) {
-            console.error('Error inserting user data:', insertError);
-        } else {
-            setIsDialogOpen(true)
-            console.log('User profile created:', insertData);
-        }
+        setLoading(false)
     };
 
     const handleDialogClose = () => {
@@ -148,7 +134,7 @@ export default function SignupPage() {
                     </Alert>
                 )}
                 <Button type="submit" className="w-full bg-black text-white">
-                    アカウント作成
+                    {loading ? "作成中..." : "アカウント作成"}
                 </Button>
                 </div>
             </form>
