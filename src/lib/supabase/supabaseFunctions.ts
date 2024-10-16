@@ -164,3 +164,25 @@ export const updateUsername = async(user: userType , newUsername: string) => {
 
     return { error }
 }
+
+export const addImage = async(file: File | null , user: userType | null) => {
+    if(!file || !user){
+        const filePath = null
+        const imageUrl = null
+        return { filePath, imageUrl }
+    }
+
+    const filePath = `${user.friend_id}/${file.name}`
+    let imageUrl = ""
+
+    const { error } = await supabase.storage.from('togo_image_bucket').upload(filePath, file)
+
+    if(error){
+        console.log("Error imageUpload");
+    }else{
+        const { data } = supabase.storage.from('togo_image_bucket').getPublicUrl(filePath)
+        imageUrl = data.publicUrl
+    }
+
+    return { filePath, imageUrl }
+}
