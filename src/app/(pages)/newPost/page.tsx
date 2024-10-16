@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Card, CardContent } from "@/components/ui/card"
 import { format } from "date-fns"
-import { CalendarIcon, Upload, MapPin, User, Clock } from "lucide-react"
+import { CalendarIcon, Upload, MapPin, User, Clock, Undo2 } from "lucide-react"
 import Image from 'next/image'
 import Header from '@/app/features/components/Header'
 import { supabase } from '@/lib/supabase/supabaseClient'
@@ -18,6 +18,7 @@ import { normalize } from '@geolonia/normalize-japanese-addresses'
 import { addTogo } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
 import Footer from '@/app/features/components/Footer'
+import Link from "next/link";
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
 type userType = Database['public']['Tables']['users']['Row'];
@@ -121,8 +122,19 @@ export default function NewPostForm() {
             <header className="bg-primary text-primary-foreground p-4">
                 <Header user={user} />
             </header>
+
             <div className="container mx-auto p-4 max-w-2xl">
-                <h1 className="text-2xl font-bold mb-6">新規投稿</h1>
+                <div className="mb-4 flex justify-between items-center">
+                    <h1 className="text-2xl font-bold mb-6">新規投稿</h1>
+                    <div className="w-auto justify-around">
+                        <Button className="bg-black text-white rounded-xl">
+                            <Undo2 className="w-4 h-4 mr-2" />
+                            <Link href={"/main"}>
+                                メイン画面に戻る
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                     <Label htmlFor="placeName">地名（店舗名など）</Label>
@@ -234,7 +246,7 @@ export default function NewPostForm() {
                                 <User className="mr-2 h-4 w-4" /> {user?.username}
                             </p>
                             <p className="flex items-center text-sm">
-                                <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm")}
+                                <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm:ss")}
                             </p>
                             </CardContent>
                         </div>
