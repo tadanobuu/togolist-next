@@ -2,10 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
     Dialog,
     DialogContent,
@@ -16,63 +13,10 @@ import {
 } from "@/components/ui/dialog"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { Database } from '@/types/supabase'
-import { addUser, signUp } from '@/lib/supabase/supabaseFunctions'
-import { createNewUser } from '@/lib/createNewUser'
-
-type newUser = Database['public']['Tables']['users']['Insert'];
+import SignupForm from '@/features/components/signup/SignupForm'
 
 export default function SignupPage() {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [error, setError] = useState<string | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const router = useRouter()
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError(null)
-        
-        // 基本的なバリデーション
-        if (!username || !email || !password || !confirmPassword) {
-        setError('すべてのフィールドを入力してください。')
-        return
-        }
-
-        if (password !== confirmPassword) {
-        setError('パスワードが一致しません。')
-        return
-        }
-
-        setLoading(true)
-
-        // サインアップ処理
-        const { data, error } = await signUp(email, password)
-
-        if (error) {
-            console.error('Error signing up:', error.message);
-            return;
-        }
-
-        const newUser: newUser = createNewUser(data.user!.id.toString(), username)
-        const { error: insertError } = await addUser(newUser)
-
-        if (!insertError) {
-            setIsDialogOpen(true);
-        }
-
-        setLoading(false)
-    };
-
-    const handleDialogClose = () => {
-        setIsDialogOpen(false)
-        // ログインページにリダイレクト
-        router.push('/login')
-    }
 
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col justify-center items-center p-4">
@@ -85,59 +29,7 @@ export default function SignupPage() {
             <CardDescription>新規アカウントを作成</CardDescription>
             </CardHeader>
             <CardContent>
-            <form onSubmit={handleSubmit}>
-                <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="username">ユーザー名</Label>
-                    <Input
-                    id="username"
-                    placeholder="ユーザー名を入力"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="email">メールアドレス</Label>
-                    <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="password">パスワード</Label>
-                    <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="confirm-password">パスワード（確認）</Label>
-                    <Input
-                    id="confirm-password"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    />
-                </div>
-                {error && (
-                    <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                )}
-                <Button type="submit" className="w-full bg-black text-white">
-                    {loading ? "作成中..." : "アカウント作成"}
-                </Button>
-                </div>
-            </form>
+                <SignupForm setIsDialogOpen={setIsDialogOpen} />
             </CardContent>
             <CardFooter>
             <p className="text-sm text-center w-full text-muted-foreground">
@@ -159,8 +51,8 @@ export default function SignupPage() {
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-                <Button onClick={handleDialogClose} className="w-full">
-                OK
+                <Button className="w-full">
+                    <Link href={"/main"}>OK</Link>
                 </Button>
             </DialogFooter>
             </DialogContent>

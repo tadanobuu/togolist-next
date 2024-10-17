@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -9,23 +9,33 @@ import { CalendarIcon } from "lucide-react"
 import { Database } from "@/types/supabase";
 
 type userType = Database['public']['Tables']['users']['Row'];
-type TogoType = Database['public']['Tables']['togo']['Row'];
 type ChildComponentProps = {
     user: userType | null,
     followId: string,
     followUsername: string | null,
-    setDisplayList: React.Dispatch<React.SetStateAction<TogoType[]>>,
-    togos: TogoType[],
+    setSearchText: React.Dispatch<React.SetStateAction<string>>,
+    setSearchUser: React.Dispatch<React.SetStateAction<string | null>>,
+    setSearchPregecture: React.Dispatch<React.SetStateAction<string | null>>,
+    setSearchStartDate: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    setSearchEndDate: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    searchStartDate: Date | undefined,
+    searchEndDate: Date | undefined
 };
 
-const FilterItems = ({ user, followId, followUsername, setDisplayList, togos }: ChildComponentProps) => {
+const FilterItems = ({
+            user,
+            followId,
+            followUsername,
+            setSearchText,
+            setSearchUser,
+            setSearchPregecture,
+            setSearchStartDate,
+            setSearchEndDate,
+            searchStartDate,
+            searchEndDate
+    }: ChildComponentProps) => {
 
     const [ inputText , setInputText ] = useState<string>("");
-    const [ searchText , setSearchText ] = useState<string>("");
-    const [ searchUser , setSearchUser ] = useState<string | null>(null);
-    const [ searchPregecture , setSearchPregecture ] = useState<string | null>(null);
-    const [ searchStartDate , setSearchStartDate ] = useState<Date | undefined>(undefined);
-    const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
 
     const startDateChange = (value: Date | undefined) => {
         setSearchStartDate(value)
@@ -40,19 +50,6 @@ const FilterItems = ({ user, followId, followUsername, setDisplayList, togos }: 
             setSearchStartDate(value)
         }
     }
-    
-    let displayList = togos;
-    if(searchText) displayList = displayList.filter(item => item.palceName.indexOf(searchText) !== -1);
-    if(searchUser && searchUser !== "ALL") displayList = displayList.filter(item => item.postUserId === searchUser)
-    if(searchPregecture && searchPregecture !== "ALL") displayList = displayList.filter(item => item.prefecture === searchPregecture )
-    if(searchStartDate && searchEndDate){
-        displayList = displayList.filter(item => {
-        return(
-            (!item.startDate || new Date(item.startDate + "T00:00:00") <= searchEndDate) &&
-            (!item.endDate || new Date(item.endDate + "T00:00:00") >= searchStartDate)
-        )})
-    };
-    setDisplayList(displayList)
 
     return (
         <div className="mb-4 space-y-2">

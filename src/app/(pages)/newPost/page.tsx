@@ -11,11 +11,11 @@ import { addImage, addTogo, getUser } from '@/lib/supabase/supabaseFunctions'
 import { useRouter } from 'next/navigation'
 import Footer from '@/components/Footer'
 import Link from "next/link";
-import Preview from '@/app/features/components/newPost/Preview'
-import BackgroundImage from '@/app/features/components/newPost/BackgroundImage'
-import Dateform from '@/app/features/components/newPost/Dateform'
-import Addressform from '@/app/features/components/newPost/Addressform'
-import PlaceName from '@/app/features/components/newPost/PlaceName'
+import Preview from '@/features/components/newPost/Preview'
+import BackgroundImage from '@/features/components/newPost/BackgroundImage'
+import Dateform from '@/features/components/newPost/Dateform'
+import Addressform from '@/features/components/newPost/Addressform'
+import PlaceName from '@/features/components/newPost/PlaceName'
 
 type Togo = Database['public']['Tables']['togo']["Insert"];
 type userType = Database['public']['Tables']['users']['Row'];
