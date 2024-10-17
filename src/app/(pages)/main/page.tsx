@@ -36,7 +36,11 @@ export default function TOGOListMain() {
   const [ trigger, setTrigger ] = useState<boolean>(false);
   const [ isUsernameDialogOpen, setIsUsernameDialogOpen ] = useState<boolean>(false)
   const [ newUsername, setNewUsername ] = useState<string>("")
-  const [ displayList, setDisplayList ] = useState<Togo[]>([])
+  const [ searchText , setSearchText ] = useState<string>("");
+  const [ searchUser , setSearchUser ] = useState<string | null>(null);
+  const [ searchPregecture , setSearchPregecture ] = useState<string | null>(null);
+  const [ searchStartDate , setSearchStartDate ] = useState<Date | undefined>(undefined);
+  const [ searchEndDate , setSearchEndDate ] = useState<Date | undefined>(undefined);
 
   const router = useRouter();
 
@@ -86,6 +90,18 @@ export default function TOGOListMain() {
     checkUser().then((user) => user ? fetchTogos(user) : console.log(user));
   },[router,trigger])
 
+  let displayList = togos;
+  if(searchText) displayList = displayList.filter(item => item.palceName.indexOf(searchText) !== -1);
+  if(searchUser && searchUser !== "ALL") displayList = displayList.filter(item => item.postUserId === searchUser)
+  if(searchPregecture && searchPregecture !== "ALL") displayList = displayList.filter(item => item.prefecture === searchPregecture )
+  if(searchStartDate && searchEndDate){
+      displayList = displayList.filter(item => {
+      return(
+          (!item.startDate || new Date(item.startDate + "T00:00:00") <= searchEndDate) &&
+          (!item.endDate || new Date(item.endDate + "T00:00:00") >= searchStartDate)
+      )})
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header user={user} />
@@ -102,8 +118,13 @@ export default function TOGOListMain() {
           user={user}
           followId={followId}
           followUsername={followUsername}
-          setDisplayList={setDisplayList}
-          togos={togos}
+          setSearchText={setSearchText}
+          setSearchUser={setSearchUser}
+          setSearchPregecture={setSearchPregecture}
+          setSearchStartDate={setSearchStartDate}
+          setSearchEndDate={setSearchEndDate}
+          searchStartDate={searchStartDate}
+          searchEndDate={searchEndDate}
         />
 
         <Tabs defaultValue="list" className="mb-4">
