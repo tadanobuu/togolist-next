@@ -28,7 +28,7 @@ type formDataType = {
     file: File | null,
 }
 
-export default function NewPostForm() {
+const NewPost = () => {
     const [formData, setFormData] = useState<formDataType>({
         placeName: '',
         address: '',
@@ -111,3 +111,5 @@ export default function NewPostForm() {
         </>
     )
 }
+
+export default NewPost;

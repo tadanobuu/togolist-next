@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import SignupForm from '@/features/components/signup/SignupForm'
 
-export default function SignupPage() {
+const Signup = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     return (
@@ -60,3 +60,5 @@ export default function SignupPage() {
         </div>
     )
 }
+
+export default Signup;
