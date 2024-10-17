@@ -22,7 +22,7 @@ type Togo = Database['public']['Tables']['togo']['Row'];
 type userType = Database['public']['Tables']['users']['Row'];
 type newUser = Database['public']['Tables']['users']['Insert'];
 
-export default function TOGOListMain() {
+const Main = () => {
 
   const [ togos , setTogos ] = useState<Togo[]>([]);
   const [ isLoading , setIsLoading ] = useState<boolean>(false);
@@ -183,3 +183,5 @@ export default function TOGOListMain() {
     </div>
   )
 }
+
+export default Main;
