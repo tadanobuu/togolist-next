@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import EmailLogin from "@/app/features/components/login/EmailLogin"
-import GoogleLogin from "@/app/features/components/login/GoogleLogin"
+import EmailLogin from "@/features/components/login/EmailLogin"
+import GoogleLogin from "@/features/components/login/GoogleLogin"
 
 export default function LoginPage() {
 

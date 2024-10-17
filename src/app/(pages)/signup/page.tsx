@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import SignupForm from '@/app/features/components/signup/SignupForm'
+import SignupForm from '@/features/components/signup/SignupForm'
 
 export default function SignupPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
