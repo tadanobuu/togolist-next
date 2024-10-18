@@ -4,7 +4,7 @@ import { MapPin } from 'lucide-react'
 import EmailLogin from "@/features/components/login/EmailLogin"
 import GoogleLogin from "@/features/components/login/GoogleLogin"
 
-export default function LoginPage() {
+const Login = () => {
 
     return (
         <div className="min-h-screen bg-gray-200 flex flex-col justify-center items-center p-4">
@@ -46,3 +46,5 @@ export default function LoginPage() {
         </div>
     )
 }
+
+export default Login;
