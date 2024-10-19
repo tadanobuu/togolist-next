@@ -1,7 +1,5 @@
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
 
 const Page = () => {
 
@@ -17,9 +15,7 @@ const Page = () => {
         }
     }
 
-    useEffect(() => {
-        pageChenge();
-    },[]);
+    pageChenge();
 
     return (
         <h2>ページ遷移中</h2>
