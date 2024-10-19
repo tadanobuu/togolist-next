@@ -16,8 +16,7 @@ export const getTogos = async (userId: userType['friend_id'], followId: userType
         .order('postDatetime', { ascending: false });
 
     if(error){
-        console.log(error);
-        return [];
+        throw new Error(error.message)
     }
     return data ?? [];
 };
@@ -26,7 +25,7 @@ export const addTogo = async (newTogo: newTogo) => {
     const { data, error } = await supabase.from("togo").upsert(newTogo).select()
 
     if(error){
-        console.log(error);
+        throw new Error(error.message)
     }
 
     return data;
@@ -35,7 +34,7 @@ export const addTogo = async (newTogo: newTogo) => {
 export const updateTodo = async (newTogo: updateTogo) => {
     const { data, error } = await supabase.from('togo').update(newTogo).eq('id', newTogo.id!);
     if (error){
-        console.log(error);
+        throw new Error(error.message)
     }
 
     return data;
@@ -44,14 +43,14 @@ export const updateTodo = async (newTogo: updateTogo) => {
 export const deleteTodo = async (id: number, imagePath: string | null) => {
     const { data, error } = await supabase.from('togo').delete().eq('id', id);
     if (error){
-        console.log(error);
+        throw new Error(error.message)
     }
 
     if(imagePath){
         const { error } = await supabase.storage.from("togo_image_bucket").remove([imagePath]);
 
         if(error){
-            console.log(error)
+            throw new Error(error.message)
         }
     }
 
@@ -65,7 +64,7 @@ export const getUser = async(id: string) => {
         .eq('id', id);  
 
     if (error) {
-        console.error('Error fetching user data:', error);
+        throw new Error(error.message);
     }
 
     return { userData , error } 
@@ -75,7 +74,7 @@ export const addUser = async(user: newUserType) => {
     const { data, error } = await supabase.from('users').insert(user);
 
     if (error) {
-        console.error('Error inserting user into users table:', error);
+        throw new Error(error.message);
     } else {
         console.log('User inserted into users table successfully');
     }
@@ -91,7 +90,7 @@ export const getFirendUser = async(userData: userType) => {
         .eq('friend_id', userData.follow_id);
 
         if(error){
-            console.log(error)
+            throw new Error(error.message);
         }
         
         return { data }
@@ -108,9 +107,9 @@ export const signinWithPassword = async(email: string, password: string) => {
     
     if (error) {
         if(error.message === "Email not confirmed"){
-            console.log("送信された確認メールから登録を行ってください")
+            console.error("送信された確認メールから登録を行ってください")
         }else{
-            console.log("Error signing in:", error.message)
+            throw new Error(error.message)
         }
     }
     
@@ -126,7 +125,7 @@ export const signinWithGoogleOAuth = async() => {
     })
 
     if (error) {
-        console.error('Google login error:', error.message);
+        throw new Error(error.message)
     }
 }
 
@@ -146,7 +145,7 @@ export const updateFirendId = async(user: userType , followId: string) => {
         .eq('id', user.id);
 
     if (error) {
-        console.error('Error updating follow_id:', error);
+        throw new Error(error.message)
     }
 
     return{ error }
@@ -159,7 +158,7 @@ export const updateUsername = async(user: userType , newUsername: string) => {
         .eq('friend_id', user.friend_id!);
 
     if(error){
-        console.error('Error updating username:', error);
+        throw new Error(error.message)
     }
 
     return { error }
@@ -178,7 +177,7 @@ export const addImage = async(file: File | null , user: userType | null) => {
     const { error } = await supabase.storage.from('togo_image_bucket').upload(filePath, file)
 
     if(error){
-        console.log("Error imageUpload");
+        throw new Error(error.message)
     }else{
         const { data } = supabase.storage.from('togo_image_bucket').getPublicUrl(filePath)
         imageUrl = data.publicUrl
