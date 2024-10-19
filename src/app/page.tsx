@@ -1,3 +1,5 @@
+'use client';
+
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useRouter } from "next/navigation";
 
