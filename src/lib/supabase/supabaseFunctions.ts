@@ -121,7 +121,7 @@ export const signinWithGoogleOAuth = async() => {
     const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: 'http://localhost:3000/main',
+            redirectTo: 'https://togolist-next.vercel.app/main',
         },
     })
 
