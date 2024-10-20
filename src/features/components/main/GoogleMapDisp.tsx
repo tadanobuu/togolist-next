@@ -62,7 +62,7 @@ const GoogleMapDisp = ({ displayList }: ChildComponentProps) => {
     }, [displayList]);
 
     return (
-        <div className="h-[calc(100vh-20rem)] bg-muted flex items-center justify-center">
+        <div className="mt-4 flex items-center justify-center">
             <div className="w-full h-96 rounded-lg shadow-md" ref={mapRef}></div>
         </div>
     )
