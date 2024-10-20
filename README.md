@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 概要
+## アプリ名   
+Togo List  
+  
+## 目的   
+行きたい場所を画像とテキストでリスト化できるアプリです  
+他のユーザーに共有することも可能です  
+  
+## 技術スタック  
+フロントエンド: Next.js 14, GoogleMapsPlatform  
+UIライブラリ: Tailwind CSS, chadcn/ui 
+データ保存: Supabase  
+その他API: normalize-japanese-addresses  
+デプロイ: Vercel  
+  
+# URL
+https://togolist-next.vercel.app/  
 
-## Getting Started
+# ユーザーインターフェース (UI) 設計
+## ワイヤーフレーム
+１.ログイン画面  
+「メールアドレス、パスポート」  
+「Googleアカウント」  
+いずれかを使用してログインしホーム画面へ遷移できる  
+また、サインアップ画面へ遷移することができる    
 
-First, run the development server:
+２.サインアップ画面  
+メールアドレス、パスポート、ユーザー名  
+を設定しサインアップすることができる  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+３.メイン画面  
+・リストの表示  
+・Google Mapの表示  
+・リストのフィルタリング  
+・ユーザー名変更  
+・フォロー機能の管理  
+・新規投稿画面への遷移   
+・ログアウト
+を行うことができる  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+４.新規投稿画面  
+・地名  
+・住所  
+・期間  
+・画像  
+を入力して新規投稿が行える　　
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 操作方法
+ログイン、サインアップを行い  
+ホーム画面へ遷移してください  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+新規投稿を行う場合は「新規投稿画面」  
 
-## Learn More
+他ユーザーをフォローする場合は「フォロー管理」  
+※ テスト用ユーザーID -> uois8agk   
 
-To learn more about Next.js, take a look at the following resources:
+また、リストをフィルタリングしたい場合は  
+地名で検索のテキストボックスや  
+投稿者、都道府県などのセレクトボックスなどを操作してください  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# データフロー
+## togo
+・概要  
+  投稿されたtogoを管理するテーブル　　
+  
+・カラム  
+  id  
+  placeName  
+  address  
+  prefecture(都道府県)  
+  lat(緯度)  
+  lng(経度)  
+  startDate  
+  endDate  
+  imageUrl(表示するためのURL)  
+  postDatetime  
+  postUserId  
+  imagePath(削除するためのパス)  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## users
+・概要  
+  ユーザーを管理するテーブル　　
+  
+・カラム  
+  id(uid)  
+  username  
+  friend_id  
+  follow_id  
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 技術スタックの選定理由
+## Next.js 14
+コンポーネントベースの設計が可能で、フロントエンドの開発を効率化  
+App Routerを使用して画面遷移を実装  
+将来的にSSR（サーバーサイドレンダリング）や静的生成などの機能を追加できる柔軟性  
+## supabase
+データベース、認証、ストレージ、の3つのバックエンド機能を一つのプラットフォームで提供している  
+これにより、インフラ構築にかける時間を削減し、迅速に開発サイクルを回すことが可能  
+## Tailwind CSS , chadcn/ui
+Reactプロジェクトに統合が簡単であるため  
+不必要なコンポーネントのインポートがないため軽量  
