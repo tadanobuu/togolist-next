@@ -59,8 +59,8 @@ const NewPost = () => {
     }, [router])
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
-        if(isSending) return
         event.preventDefault()
+        if(isSending) return
         setIsSending(true);
         const { filePath, imageUrl } = await addImage(formData.file, user)
         const result = await normalize(formData.address);
