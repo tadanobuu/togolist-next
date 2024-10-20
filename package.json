@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@geolonia/normalize-japanese-addresses": "^3.0.0",
+    "@googlemaps/react-wrapper": "^1.1.42",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.2",
@@ -29,6 +30,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/googlemaps": "^3.43.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

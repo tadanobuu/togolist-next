@@ -145,7 +145,7 @@ const Main = () => {
             />
           </TabsContent>
           <TabsContent value="map">
-            <GoogleMapDisp />
+            <GoogleMapDisp displayList={displayList}/>
           </TabsContent>
         </Tabs>
       </main>
