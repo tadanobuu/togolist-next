@@ -23,7 +23,7 @@ const Addressform = ({ formData, setFormData }: ChildComponentProps) => {
 
     return (
         <div>
-            <Label htmlFor="address">住所</Label>
+            <Label htmlFor="address">住所 <text className="text-xs text-red-500 ml-2">※必須</text></Label>
             <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required />
         </div>
     )

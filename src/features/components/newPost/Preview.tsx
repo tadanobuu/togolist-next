@@ -50,7 +50,7 @@ const Preview = ({formData, user}: props) => {
                         <User className="mr-2 h-4 w-4" /> {user?.username}
                     </p>
                     <p className="flex items-center text-sm">
-                        <Clock className="mr-2 h-4 w-4" /> {format(new Date(), "yyyy年MM月dd日 HH:mm:ss")}
+                        <Clock className="mr-2 h-4 w-4" /> 2024年01月01日 10:00:00
                     </p>
                     </CardContent>
                 </div>
