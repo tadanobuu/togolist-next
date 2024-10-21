@@ -23,7 +23,7 @@ const PlaceName = ({ formData, setFormData }: ChildComponentProps) => {
     
     return (
         <div>
-            <Label htmlFor="placeName">地名（店舗名など）</Label>
+            <Label htmlFor="placeName">地名（店舗名など）<text className="text-xs text-red-500 ml-2">※必須</text></Label>
             <Input id="placeName" name="placeName" value={formData.placeName} onChange={handleInputChange} required />
         </div>
     )

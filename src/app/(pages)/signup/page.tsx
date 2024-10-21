@@ -52,7 +52,7 @@ const Signup = () => {
             </DialogHeader>
             <DialogFooter>
                 <Button className="w-full">
-                    <Link href={"/main"}>OK</Link>
+                    <Link href={"/login"}>OK</Link>
                 </Button>
             </DialogFooter>
             </DialogContent>
