@@ -16,6 +16,9 @@ UIライブラリ: Tailwind CSS, chadcn/ui
 # URL
 https://togolist-next.vercel.app/  
 
+# 設計図
+![architecture.png](/togolist-app-next/architecture.png)
+
 # ユーザーインターフェース (UI) 設計
 ## ワイヤーフレーム
 １.ログイン画面  
@@ -48,6 +51,9 @@ https://togolist-next.vercel.app/
 ## 操作方法
 ログイン、サインアップを行い  
 ホーム画面へ遷移してください  
+※下記アカウントをご利用ください※  
+※Email : t7849866@gmail.com ※  
+※password : password        ※  
 
 新規投稿を行う場合は「新規投稿画面」  
 
