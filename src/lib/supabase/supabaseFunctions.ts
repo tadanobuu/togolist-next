@@ -74,7 +74,25 @@ export const addUser = async(user: newUserType) => {
     const { data, error } = await supabase.from('users').insert(user);
 
     if (error) {
-        throw new Error(error.message);
+        try {
+            const response = await fetch('/api/deleteUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id }),
+            });
+        
+            const data = await response.json();
+        
+            if (!response.ok) {
+                throw new Error(data.error || 'Error deleting user');
+            }
+        
+            console.log('User successfully deleted');
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+        }
     } else {
         console.log('User inserted into users table successfully');
     }
