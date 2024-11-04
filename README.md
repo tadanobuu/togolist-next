@@ -1,107 +1,104 @@
-# 概要
-## アプリ名   
-Togo List  
-  
-## 目的   
-行きたい場所を画像とテキストでリスト化できるアプリです  
-他のユーザーに共有することも可能です  
-  
-## 技術スタック  
-フロントエンド: Next.js 14, GoogleMapsPlatform  
-UIライブラリ: Tailwind CSS, chadcn/ui 
-データ保存: Supabase  
-その他API: normalize-japanese-addresses  
-デプロイ: Vercel  
-  
-# URL
-https://togolist-next.vercel.app/  
+# Togo List
 
-# 設計図
-![architecture.png](https://private-user-images.githubusercontent.com/172908458/378261070-1f687249-0a41-43c3-822d-bea4cc641def.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjk0ODA5MTcsIm5iZiI6MTcyOTQ4MDYxNywicGF0aCI6Ii8xNzI5MDg0NTgvMzc4MjYxMDcwLTFmNjg3MjQ5LTBhNDEtNDNjMy04MjJkLWJlYTRjYzY0MWRlZi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQxMDIxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MTAyMVQwMzE2NTdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1lYWNkMjNiNzgyY2QxYjg5ZTY1NWZmZjNkNzIyMjQ2ZmZhYWVmZjMyYzE3NTRiZWE4ZjQ3YTc4ZTUxYjQ5OTI4JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.DIvKrwcds3Slj4kz6kTBDk43NJbLj50ObCmqCDsZRnw)  
-https://github.com/tadanobuu/togolist-next/issues/31  
+## 概要
 
-# ユーザーインターフェース (UI) 設計
-## ワイヤーフレーム
-１.ログイン画面  
-「メールアドレス、パスポート」  
-「Googleアカウント」  
-いずれかを使用してログインしホーム画面へ遷移できる  
-また、サインアップ画面へ遷移することができる    
+Togo Listは、行きたい場所を画像とテキストでリスト化し、他のユーザーと共有できるアプリです。
 
-２.サインアップ画面  
-メールアドレス、パスポート、ユーザー名  
-を設定しサインアップすることができる  
+## アプリURL
+[Togo List - 公開アプリURL](https://togolist-next.vercel.app/)
 
-３.メイン画面  
-・リストの表示  
-・Google Mapの表示  
-・リストのフィルタリング  
-・ユーザー名変更  
-・フォロー機能の管理  
-・新規投稿画面への遷移   
-・ログアウト
-を行うことができる  
+---
 
-４.新規投稿画面  
-・地名  
-・住所  
-・期間  
-・画像  
-を入力して新規投稿が行える　　
+## 技術スタック
+
+- **フロントエンド**: Next.js 14, Google Maps Platform
+- **UIライブラリ**: Tailwind CSS, chadcn/ui
+- **データ保存**: Supabase
+- **その他API**: normalize-japanese-addresses
+- **デプロイ**: Vercel
+
+---
+
+## 設計図
+![アーキテクチャ図](https://zyuekgrvgrilgtfagjge.supabase.co/storage/v1/object/public/togo_image_bucket/architecture/architecture.png)
+
+---
+
+## ユーザーインターフェース (UI) 設計
+
+### 1. ログイン画面
+- メールアドレスとパスワード、またはGoogleアカウントでログイン
+- サインアップ画面へのリンクあり
+
+### 2. サインアップ画面
+- メールアドレス、パスワード、ユーザー名を設定してサインアップ可能
+
+### 3. メイン画面
+- リスト表示、Googleマップ表示、リストのフィルタリング
+- ユーザー名変更、フォロー機能、新規投稿、ログアウトが可能
+
+### 4. 新規投稿画面
+- 地名、住所、期間、画像を入力して新規投稿を行える
+
+---
 
 ## 操作方法
-ログイン、サインアップを行い  
-ホーム画面へ遷移してください  
-※下記アカウントをご利用ください※  
-※Email : t7849866@gmail.com ※  
-※password : password        ※  
 
-新規投稿を行う場合は「新規投稿画面」  
+1. ログインまたはサインアップ後、ホーム画面に移動してください。
+   - テストアカウント:  
+     - Email: `t7849866@gmail.com`
+     - Password: `password`
 
-他ユーザーをフォローする場合は「フォロー管理」  
-※ テスト用ユーザーID -> uois8agk   
+2. 新規投稿を行う場合は「新規投稿画面」へ
+3. 他ユーザーをフォローする場合は「フォロー管理」へ
+   - テスト用ユーザーID: `uois8agk`
+   
+4. リストのフィルタリングは、地名検索や投稿者・都道府県のセレクトボックスを使用してください。
 
-また、リストをフィルタリングしたい場合は  
-地名で検索のテキストボックスや  
-投稿者、都道府県などのセレクトボックスなどを操作してください  
+---
 
-# データフロー
-## togo
-・概要  
-  投稿されたtogoを管理するテーブル　　
-  
-・カラム  
-  id  
-  placeName  
-  address  
-  prefecture(都道府県)  
-  lat(緯度)  
-  lng(経度)  
-  startDate  
-  endDate  
-  imageUrl(表示するためのURL)  
-  postDatetime  
-  postUserId  
-  imagePath(削除するためのパス)  
+## データフロー
 
-## users
-・概要  
-  ユーザーを管理するテーブル　　
-  
-・カラム  
-  id(uid)  
-  username  
-  friend_id  
-  follow_id  
+### `togo`テーブル
+**概要**: 投稿されたTogoを管理するテーブル
+- **カラム**
+  - `id`
+  - `placeName`（地名）
+  - `address`（住所）
+  - `prefecture`（都道府県）
+  - `lat`（緯度）
+  - `lng`（経度）
+  - `startDate`（開始日）
+  - `endDate`（終了日）
+  - `imageUrl`（画像URL）
+  - `postDatetime`（投稿日時）
+  - `postUserId`（投稿ユーザーID）
+  - `imagePath`（削除用のパス）
 
-# 技術スタックの選定理由
-## Next.js 14
-コンポーネントベースの設計が可能で、フロントエンドの開発を効率化  
-App Routerを使用して画面遷移を実装  
-将来的にSSR（サーバーサイドレンダリング）や静的生成などの機能を追加できる柔軟性  
-## supabase
-データベース、認証、ストレージ、の3つのバックエンド機能を一つのプラットフォームで提供している  
-これにより、インフラ構築にかける時間を削減し、迅速に開発サイクルを回すことが可能  
-## Tailwind CSS , chadcn/ui
-Reactプロジェクトに統合が簡単であるため  
-不必要なコンポーネントのインポートがないため軽量  
+### `users`テーブル
+**概要**: ユーザーを管理するテーブル
+- **カラム**
+  - `id`（UID）
+  - `username`（ユーザー名）
+  - `friend_id`
+  - `follow_id`
+
+---
+
+## 技術スタックの選定理由
+
+### Next.js 14
+- コンポーネントベース設計によりフロントエンド開発を効率化
+- App Routerでの画面遷移実装
+- SSRや静的生成の追加が容易で将来的な拡張性が高い
+
+### Supabase
+- データベース、認証、ストレージ機能を統合して提供
+- インフラ構築の時間を削減し、迅速な開発サイクルを実現
+
+### Tailwind CSS & chadcn/ui
+- 軽量でReactとの統合が簡単
+- 不要なコンポーネントのインポートがなく、パフォーマンスが向上
+
+--- 
+
