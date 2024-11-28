@@ -36,7 +36,11 @@ const ListDisp = ({
 
     return (
         <div className="gap-y-4 grid lg:grid-cols-2 lg:gap-x-4">
-        { isLoading ? <h3 className="font-bold">loading...</h3> :
+        { isLoading ? 
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
+                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div> 
+            :
             displayList.map((item: TogoType) => {
                 let dateTime = item.postDatetime ? item.postDatetime.toLocaleString().replace("T"," ").replace(".", "").slice(0, -3) : "";
                 if(dateTime.length === 18){
