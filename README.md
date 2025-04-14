@@ -20,7 +20,7 @@ Togo Listは、行きたい場所を画像とテキストでリスト化し、�
 ---
 
 ## 設計図
-![アーキテクチャ図](https://zyuekgrvgrilgtfagjge.supabase.co/storage/v1/object/public/togo_image_bucket/architecture/architecture.png)
+![アーキテクチャ図](./architecture.png)
 
 ---
 
